@@ -1,3 +1,7 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 200;
+}
 #logo {
     font-family: 'Courier New', Courier, monospace;
     font-size: 30px;
@@ -13,4 +17,18 @@
 
 .navbar-item {
     color: aliceblue;
+}
+
+.main {
+    margin-top: 2%;
+}
+#top {
+    text-align: center;
+    margin-top: 3%;
+}
+
+.content {
+    text-align: justify;
+    margin-left:5%;
+    margin-right: 5%;
 }
