@@ -8,8 +8,8 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
           crossorigin="anonymous">
     <link rel="stylesheet" href="../css/home.css">
-    <link rel="stylesheet" href="insertion.css">
-    <title>Insertion Sort</title>
+    <link rel="stylesheet" href="../Insertion_sort/insertion.css">
+    <title>BFS</title>
 </head>
 
 <body>
@@ -47,7 +47,7 @@
         <div class="col-3 col-lg-2 main">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"> 
-                    <a href="insertion.html">Insertion Sort</a>
+                    <a href="../Insertion_sort/insertion.html">Insertion Sort</a>
                 </li>
                 <li class="list-group-item"> 
                     <a href="../Merge_sort/mergeSort.html">Merge Sort</a>
@@ -56,7 +56,7 @@
                     <a href="../Quick_sort/quickSort.html">Quick Sort</a>
                 </li>
                 <li class="list-group-item"> 
-                    <a href="../BFS/bfs.html">Bfs</a>
+                    <a href="bfs.html">Bfs</a>
                 </li>
                 <li class="list-group-item"> 
                         <a href="../DFS/dfs.html">Dfs</a>
@@ -73,7 +73,7 @@
             </ul>
         </div> <!--col-3.. main div-->
         <div class="col-9 main ">
-            <h1 id="top">Insertion Sort</h1>
+            <h1 id="top">Breadth First Search</h1>
             <p class="content">
                 This is an in-place comparison-based sorting algorithm. Here, a sub-list is maintained which is always sorted. For example, the lower part of an array is maintained to be sorted. An element which is to be 'insert'ed in this sorted sub-list, has to find its appropriate place and then it has to be inserted there. Hence the name, <b>insertion sort.</b> 
             </p>
@@ -83,11 +83,11 @@
                 Sorting is typically done in-place, by iterating up the array, growing the sorted list behind it. At each array-position, it checks the value there against the largest value in the sorted list (which happens to be next to it, in the previous array-position checked). If larger, it leaves the element in place and moves to the next. If smaller, it finds the correct position within the sorted list, shifts all the larger values up to make a space, and inserts into that correct position.
             </p>
             
-            <h4 class="content"> Here is an animation explaining Insertion Sort: </h4>
+            <h4 class="content"> Here is an animation explaining Breadth First Search: </h4>
 
             <!--A gif explaining insertion sort  -->
             <div class="anim_container">
-                <img src="../Pic/Insertion-sort01.gif" alt="Insertion-sort01" class="img_anim">
+                <img src="../Pic/Animated_BFS.gif" alt="Insertion-sort01" class="img_anim">
             </div>
 
             <!-- pseudocode -->
@@ -113,39 +113,68 @@
             <pre class="text-white">
    
     #include &#60iostream>
+    #include &#60list>
+        
     using namespace std;
         
-    int main() {
-        int data[] = {9, 5, 1, 4, 3};
-        int size = sizeof(data) / sizeof(data[0]);
+    class Graph {
+        int numVertices;
+        list *adjLists;
+        bool* visited;
+    public:
+        Graph(int vertices);  
+        void addEdge(int src, int dest); 
+        void BFS(int startVertex);
+    };
         
-        //This function sorts the array 
-        //using insertion sort algorithm
-        insertionSort(data, size);
-        
-        cout << "Sorted array in ascending order:\n";
-        
-        //This function Prints array
-        printArray(data, size);
+    Graph::Graph(int vertices) {
+        numVertices = vertices;
+        adjLists = new list[vertices];
     }
-    
-    void insertionSort(int array[], int size) {
-        for (int step = 1; step < size; step++) {
-        int key = array[step];
-        int j = step - 1;
-        while (key < array[j] && j >= 0) {
-            // For descending order, change key<array[j] to key>array[j].
-            array[j + 1] = array[j];
-            --j;
+        
+    void Graph::addEdge(int src, int dest) {
+        adjLists[src].push_back(dest);
+        adjLists[dest].push_back(src);
+    }
+        
+    void Graph::BFS(int startVertex) {
+        visited = new bool[numVertices];
+        for(int i = 0; i < numVertices; i++)
+            visited[i] = false;
+        
+        list queue;
+        
+        visited[startVertex] = true;
+        queue.push_back(startVertex);
+        
+        list::iterator i;
+        
+        while(!queue.empty()) {
+            int currVertex = queue.front();
+            cout << "Visited " << currVertex << " ";
+            queue.pop_front();
+        
+            for(i = adjLists[currVertex].begin(); i != adjLists[currVertex].end(); ++i) {
+                int adjVertex = *i;
+                if(!visited[adjVertex]) {
+                    visited[adjVertex] = true;
+                    queue.push_back(adjVertex);
+                }
             }
-        array[j + 1] = key;
         }
     }
-    void printArray(int array[], int size) {
-        for (int i = 0; i < size; i++) {
-        cout << array[i] << " ";
-        }
-        cout << endl;
+        
+    int main() {
+        Graph g(4);
+        g.addEdge(0, 1);
+        g.addEdge(0, 2);
+        g.addEdge(1, 2);
+        g.addEdge(2, 0);
+        g.addEdge(2, 3);
+        g.addEdge(3, 3);
+        g.BFS(2);
+        
+        return 0;
     }
                             
             </pre>
@@ -153,7 +182,7 @@
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of Insertion Sort is: O( n <sup>2</sup> )</p>
+        <p class="content">The Complexity of Breadth First Search is: O( V + E )</p>
         <br>
         <br>
 
@@ -163,7 +192,7 @@
 </div> <!-- container fluid div  -->
 
 <nav class="navbar navbar-expand-sm bg-success navbar-dark ">
-       <h5 class="text-white navbar-center" >@copy Algorithms</h5> 
+       <h5 class="text-white navbar-center" >@copyright Algorithms</h5> 
  </nav>
     
 
