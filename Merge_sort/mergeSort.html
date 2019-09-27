@@ -9,7 +9,13 @@
           crossorigin="anonymous">
     <link rel="stylesheet" href="../css/home.css">
     <link rel="stylesheet" href="insertion.css">
-    <title>Insertion Sort</title>
+    <style>
+        img {
+    display: block;
+    margin: 0 auto;
+    }
+    </style>
+    <title>Merge Sort</title>
 </head>
 
 <body>
@@ -47,10 +53,10 @@
         <div class="col-3 col-lg-2 main">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"> 
-                    <a href="insertion.html">Insertion Sort</a>
+                    <a href="../Insertion_sort/insertion.html">Insertion Sort</a>
                 </li>
                 <li class="list-group-item"> 
-                    <a href="../Merge_sort/mergeSort.html">Merge Sort</a>
+                    <a href="mergeSort.html">Merge Sort</a>
                 </li>
                 <li class="list-group-item"> 
                     <a href="../Quick_sort/quickSort.html">Quick Sort</a>
@@ -73,21 +79,45 @@
             </ul>
         </div> <!--col-3.. main div-->
         <div class="col-9 main ">
-            <h1 id="top">Insertion Sort</h1>
+            <h1 id="top">Merge Sort</h1>
             <p class="content">
-                This is an in-place comparison-based sorting algorithm. Here, a sub-list is maintained which is always sorted. For example, the lower part of an array is maintained to be sorted. An element which is to be 'insert'ed in this sorted sub-list, has to find its appropriate place and then it has to be inserted there. Hence the name, <b>insertion sort.</b> 
+                    Merge Sort is a kind of Divide and Conquer algorithm in computer programrming. It is one of the most popular sorting algorithms and a great way to develop confidence in building recursive algorithms.
+            </p>
+            <p class="content">
+                A Divide and Conquer algorithm has the major parts.
+                <ol class="content">
+                    <li>Divide</li>
+                    <li>Conqure</li>
+                    <li>Combine</li>
+                </ol>
+               <p class="content">
+                    Marge sort has all of this three steps.The MergeSort function repeatedly divides the array into two halves until we reach a stage where we try to perform MergeSort on a subarray of size 1.
+               </p> 
             </p>
 
             <p class="content">
-                Insertion sort iterates, consuming one input element each repetition, and growing a sorted output list. At each iteration, insertion sort removes one element from the input data, finds the location it belongs within the sorted list, and inserts it there. It repeats until no input elements remain.
-                Sorting is typically done in-place, by iterating up the array, growing the sorted list behind it. At each array-position, it checks the value there against the largest value in the sorted list (which happens to be next to it, in the previous array-position checked). If larger, it leaves the element in place and moves to the next. If smaller, it finds the correct position within the sorted list, shifts all the larger values up to make a space, and inserts into that correct position.
+                    After that, the merge function comes into play and combines the sorted arrays into larger arrays until the whole array is merged.
+            </p>
+            <p class="content">
+                    To sort an entire array, we need to call MergeSort
+            </p>
+            <p class="content">
+                    As shown in the pseudocode below, the merge sort algorithm recursively divides the array into halves until we reach the base case of array with 1 element. After that, the merge function picks up the sorted sub-arrays and merges them to gradually sort the entire array.
+            </p>
+            <p class="content">
+                    Every recursive algorithm is dependent on a base case and the ability to combine the results from base cases. Merge sort is no different. The most important part of the merge sort algorithm is, the "merge" step.
+            </p>
+            <p class="content">
+                    The merge step is the solution to the simple problem of merging two sorted lists(arrays) to build one large sorted list(array). The process is given in the pseudocode below.
             </p>
             
-            <h4 class="content"> Here is an animation explaining Insertion Sort: </h4>
+
+            
+            <h4 class="content"> Here is an animation explaining Merge Sort: </h4>
 
             <!--A gif explaining insertion sort  -->
             <div class="anim_container">
-                <img src="../Pic/Insertion-sort01.gif" alt="Insertion-sort01" class="img_anim">
+                <img src="../Pic/Merge-sort-example-300px.gif" alt="Insertion-sort01" class="img_anim">
             </div>
 
             <!-- pseudocode -->
@@ -95,15 +125,32 @@
             <br>
             <div class="font-weight-bold">
             <pre>
-                    INSERTION-SORT (A)
-                     for j = 2 to A:length
-                     key = A[j]
-                     // Insert A[j] into the sorted sequence A[1 .. j-1].
-                     i = j - 1
-                     while i > 0 and A[i] > key
-                     A[i+1] = A[j]
-                     i = i - 1
-                     A[i+1] = key
+        MERGE-SORT(A, p, r)
+        If p < r
+            q =  [ ( p + q ) /2 ]
+        MERGE-SORT(A, p, q)
+        MERGE-SORT(A, q+1, r)
+        MERGE(A, p, q, r)
+
+
+        MERGE (A, p, q, r)
+            n1 = q – p +1
+            n2 = r – q
+            let L [1.. n1 + 1 ] and L [1.. n2 + 1 ]  be new arrays
+            for i=1 to  n1
+                L[ i ]  =  A [ p + i -1]
+            for j=1 to n2
+                R[ j ]= A[ q + j ]
+                L [n1 + 1 ] =  ∞
+                R [n2 + 1 ] =  ∞
+            i = 1
+            j = 1
+            for k = p to r
+                if L[ i ] < R [ j ]
+                    A[ k ] = L[ i ]
+                    i = i + 1
+                else  A[ k ] = R [ j ]
+                    j = j + 1
             </pre>
             </div>
 
@@ -115,45 +162,82 @@
     #include &#60iostream>
     using namespace std;
         
+    int data_array1[1000000];
+    int sorted_array[1000000];
+
+    void merge_sort(int start, int mid, int stop);
+    void split(int start, int stop);
+
     int main() {
-        int data[] = {9, 5, 1, 4, 3};
-        int size = sizeof(data) / sizeof(data[0]);
-        
-        //This function sorts the array 
-        //using insertion sort algorithm
-        insertionSort(data, size);
-        
-        cout << "Sorted array in ascending order:\n";
-        
-        //This function Prints array
-        printArray(data, size);
-    }
-    
-    void insertionSort(int array[], int size) {
-        for (int step = 1; step < size; step++) {
-        int key = array[step];
-        int j = step - 1;
-        while (key < array[j] && j >= 0) {
-            // For descending order, change key<array[j] to key>array[j].
-            array[j + 1] = array[j];
-            --j;
-            }
-        array[j + 1] = key;
+        fstream file1;
+        file1.open("index_2.txt");
+
+        if (file1.fail()) {
+            cout << "Error" << endl;
+            exit(1);
         }
-    }
-    void printArray(int array[], int size) {
-        for (int i = 0; i < size; i++) {
-        cout << array[i] << " ";
+        int i=0;
+        while (!file1.eof()) {
+            file1 >> data_array1[i];
+            i++;
         }
-        cout << endl;
+
+        file1.close();
+        int number = i-1;
+
+        clock_t begin_ = clock();
+        split(0,number-1);
+        clock_t end_ = clock();
+
+        cout<< "Execution time: "<<((double)(end_-begin_))&#60< endl;
+
+        ofstream file2;
+        file2.open("Merge_Sorted_Random_Number.txt");
+        for(int j=0; j < number; j++)
+            file2&#60< sorted_array[j] << endl;
+        file2.close();
+        return 0;
     }
-                            
+
+    void merge_sort(int start, int mid, int stop) {
+        int low, high, i;
+
+        for(low=start, high=mid+1, i=start; low <= mid && high<=stop; i++) {
+        if(data_array1[low] <= data_array1[high])
+            sorted_array[i] = data_array1[low++];
+        else
+            sorted_array[i] = data_array1[high++];
+        }
+
+        while(low <= mid)
+            sorted_array[i++] = data_array1[low++];
+
+        while(high <= stop)
+            sorted_array[i++] = data_array1[high++];
+
+    for(i = start; i <= stop; i++)
+        data_array1[i] = sorted_array[i];
+    }
+
+    void split(int start, int stop) {
+    int mid;
+
+    if(start < stop) {
+        mid = (start + stop) / 2;
+        split(start, mid);
+        split(mid+1, stop);
+        merge_sort(start, mid, stop);
+    }
+    else
+        return;
+    }
+
             </pre>
         </div>
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of Insertion Sort is: O( n <sup>2</sup> )</p>
+        <p class="content">The Complexity of Merge Sort is: O( nlogn )</p>
         <br>
         <br>
 
@@ -163,7 +247,7 @@
 </div> <!-- container fluid div  -->
 
 <nav class="navbar navbar-expand-sm bg-success navbar-dark ">
-       <h5 class="text-white navbar-center" >@copy Algorithms</h5> 
+       <h5 class="text-white navbar-center" >@copyright Algorithms</h5> 
  </nav>
     
 
