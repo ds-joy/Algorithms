@@ -8,8 +8,8 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
           crossorigin="anonymous">
     <link rel="stylesheet" href="../css/home.css">
-    <link rel="stylesheet" href="insertion.css">
-    <title>Insertion Sort</title>
+    <link rel="stylesheet" href="../Insertion_sort/insertion.css">
+    <title>Kruskal's Algorithm</title>
 </head>
 
 <body>
@@ -47,7 +47,7 @@
         <div class="col-3 col-lg-2 main">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"> 
-                    <a href="insertion.html">Insertion Sort</a>
+                    <a href="../Insertion_sort/insertion.html">Insertion Sort</a>
                 </li>
                 <li class="list-group-item"> 
                     <a href="../Merge_sort/mergeSort.html">Merge Sort</a>
@@ -65,29 +65,42 @@
                     <a href="../PRIM/prims.html">Prim's Algorithm</a>
                 </li>
                 <li class="list-group-item"> 
-                    <a href="../Kruskal/kruskal.html">Kruskal's Algorithm</a>
+                    <a href="kruskal.html">Kruskal's Algorithm</a>
                 </li>
+                <li class="list-group-item"> 
+                        <a href="../KnapsackBruteForce/KnapsackBrute.html">Knapsack Brute Force</a>
+                    </li>
                 <li class="list-group-item"> 
                     <a href="../KnapsackGreedy/knapsackGreedy.html">Knapsack(Greedy)</a>
                 </li>
             </ul>
         </div> <!--col-3.. main div-->
         <div class="col-9 main ">
-            <h1 id="top">Insertion Sort</h1>
+            <h1 id="top">Kruskal's Algorithm</h1>
             <p class="content">
-                This is an in-place comparison-based sorting algorithm. Here, a sub-list is maintained which is always sorted. For example, the lower part of an array is maintained to be sorted. An element which is to be 'insert'ed in this sorted sub-list, has to find its appropriate place and then it has to be inserted there. Hence the name, <b>insertion sort.</b> 
+                    Kruskal’s algorithm finds a safe edge to add to the growing forest by finding, of all
+                    the edges that connect any two trees in the forest, an edge (u,v) of least weight.
+                    Let C1 and C2 denote the two trees that are connected by (u,v). Since (u,v) must
+                    be a light edge connecting C1 to some other tree, (u,v) is a safe edge for C1. Kruskal’s algorithm qualifies as a greedy algorithm because at each step it adds to the forest an edge of least possible weight.
+                 
             </p>
 
             <p class="content">
-                Insertion sort iterates, consuming one input element each repetition, and growing a sorted output list. At each iteration, insertion sort removes one element from the input data, finds the location it belongs within the sorted list, and inserts it there. It repeats until no input elements remain.
-                Sorting is typically done in-place, by iterating up the array, growing the sorted list behind it. At each array-position, it checks the value there against the largest value in the sorted list (which happens to be next to it, in the previous array-position checked). If larger, it leaves the element in place and moves to the next. If smaller, it finds the correct position within the sorted list, shifts all the larger values up to make a space, and inserts into that correct position.
+                    Our implementation of Kruskal’s algorithm is like the algorithm to compute
+                    connected components from Section 21.1. It uses a disjoint-set data structure to
+                    maintain several disjoint sets of elements. Each set contains the vertices in one tree
+                    of the current forest. The operation FIND-SET(u) returns a representative element
+                    from the set that contains u. Thus, we can determine whether two vertices u and v
+                    belong to the same tree by testing whether FIND-SET(u) equals FIND-SET(v) To
+                    combine trees, Kruskal’s algorithm calls the UNION procedure.
             </p>
+           
             
-            <h4 class="content"> Here is an animation explaining Insertion Sort: </h4>
+            <h4 class="content"> Here is an animation explaining Kruskal's Algorithm: </h4>
 
             <!--A gif explaining insertion sort  -->
             <div class="anim_container">
-                <img src="../Pic/Insertion-sort01.gif" alt="Insertion-sort01" class="img_anim">
+                <img src="../Pic/KruskalDemo.gif" alt="Kruskal" class="img_anim">
             </div>
 
             <!-- pseudocode -->
@@ -95,15 +108,15 @@
             <br>
             <div class="font-weight-bold">
             <pre>
-                    INSERTION-SORT (A)
-                     for j = 2 to A:length
-                     key = A[j]
-                     // Insert A[j] into the sorted sequence A[1 .. j-1].
-                     i = j - 1
-                     while i > 0 and A[i] > key
-                     A[i+1] = A[j]
-                     i = i - 1
-                     A[i+1] = key
+                KRUSKAL(G):
+                A = ∅
+                foreach v ∈ G.V:
+                    MAKE-SET(v)
+                foreach (u, v) in G.E ordered by weight(u, v), increasing:
+                    if FIND-SET(u) ≠ FIND-SET(v):
+                        A = A ∪ {(u, v)}
+                        UNION(FIND-SET(u), FIND-SET(v))
+                return A
             </pre>
             </div>
 
@@ -112,48 +125,204 @@
             <div class="bg-dark content">
             <pre class="text-white">
    
-    #include &#60iostream>
-    using namespace std;
+    // C++ program for Kruskal's algorithm to find Minimum Spanning Tree  
+    // of a given connected, undirected and weighted graph  
+    #include &#60bits/stdc++.h> 
+    using namespace std; 
         
-    int main() {
-        int data[] = {9, 5, 1, 4, 3};
-        int size = sizeof(data) / sizeof(data[0]);
+    // a structure to represent a weighted edge in graph  
+    class Edge  
+    {  
+        public: 
+        int src, dest, weight;  
+    };  
         
-        //This function sorts the array 
-        //using insertion sort algorithm
-        insertionSort(data, size);
+    // a structure to represent a connected, undirected  
+    // and weighted graph  
+    class Graph  
+    {  
+        public: 
+        // V-> Number of vertices, E-> Number of edges  
+        int V, E;  
         
-        cout << "Sorted array in ascending order:\n";
+        // graph is represented as an array of edges.  
+        // Since the graph is undirected, the edge  
+        // from src to dest is also edge from dest  
+        // to src. Both are counted as 1 edge here.  
+        Edge* edge;  
+    };  
         
-        //This function Prints array
-        printArray(data, size);
-    }
-    
-    void insertionSort(int array[], int size) {
-        for (int step = 1; step < size; step++) {
-        int key = array[step];
-        int j = step - 1;
-        while (key < array[j] && j >= 0) {
-            // For descending order, change key<array[j] to key>array[j].
-            array[j + 1] = array[j];
-            --j;
-            }
-        array[j + 1] = key;
-        }
-    }
-    void printArray(int array[], int size) {
-        for (int i = 0; i < size; i++) {
-        cout << array[i] << " ";
-        }
-        cout << endl;
-    }
+    // Creates a graph with V vertices and E edges  
+    Graph* createGraph(int V, int E)  
+    {  
+        Graph* graph = new Graph;  
+        graph->V = V;  
+        graph->E = E;  
+        
+        graph->edge = new Edge[E];  
+        
+        return graph;  
+    }  
+        
+    // A structure to represent a subset for union-find  
+    class subset  
+    {  
+        public: 
+        int parent;  
+        int rank;  
+    };  
+        
+    // A utility function to find set of an element i  
+    // (uses path compression technique)  
+    int find(subset subsets[], int i)  
+    {  
+        // find root and make root as parent of i  
+        // (path compression)  
+        if (subsets[i].parent != i)  
+            subsets[i].parent = find(subsets, subsets[i].parent);  
+        
+        return subsets[i].parent;  
+    }  
+        
+    // A function that does union of two sets of x and y  
+    // (uses union by rank)  
+    void Union(subset subsets[], int x, int y)  
+    {  
+        int xroot = find(subsets, x);  
+        int yroot = find(subsets, y);  
+        
+        // Attach smaller rank tree under root of high  
+        // rank tree (Union by Rank)  
+        if (subsets[xroot].rank < subsets[yroot].rank)  
+            subsets[xroot].parent = yroot;  
+        else if (subsets[xroot].rank > subsets[yroot].rank)  
+            subsets[yroot].parent = xroot;  
+        
+        // If ranks are same, then make one as root and  
+        // increment its rank by one  
+        else
+        {  
+            subsets[yroot].parent = xroot;  
+            subsets[xroot].rank++;  
+        }  
+    }  
+        
+    // Compare two edges according to their weights.  
+    // Used in qsort() for sorting an array of edges  
+    int myComp(const void* a, const void* b)  
+    {  
+        Edge* a1 = (Edge*)a;  
+        Edge* b1 = (Edge*)b;  
+        return a1->weight > b1->weight;  
+    }  
+        
+    // The main function to construct MST using Kruskal's algorithm  
+    void KruskalMST(Graph* graph)  
+    {  
+        int V = graph->V;  
+        Edge result[V]; // Tnis will store the resultant MST  
+        int e = 0; // An index variable, used for result[]  
+        int i = 0; // An index variable, used for sorted edges  
+        
+        // Step 1: Sort all the edges in non-decreasing  
+        // order of their weight. If we are not allowed to  
+        // change the given graph, we can create a copy of  
+        // array of edges  
+        qsort(graph->edge, graph->E, sizeof(graph->edge[0]), myComp);  
+        
+        // Allocate memory for creating V ssubsets  
+        subset *subsets = new subset[( V * sizeof(subset) )];  
+        
+        // Create V subsets with single elements  
+        for (int v = 0; v < V; ++v)  
+        {  
+            subsets[v].parent = v;  
+            subsets[v].rank = 0;  
+        }  
+        
+        // Number of edges to be taken is equal to V-1  
+        while (e < V - 1 && i < graph->E)  
+        {  
+            // Step 2: Pick the smallest edge. And increment  
+            // the index for next iteration  
+            Edge next_edge = graph->edge[i++];  
+        
+            int x = find(subsets, next_edge.src);  
+            int y = find(subsets, next_edge.dest);  
+        
+            // If including this edge does't cause cycle,  
+            // include it in result and increment the index  
+            // of result for next edge  
+            if (x != y)  
+            {  
+                result[e++] = next_edge;  
+                Union(subsets, x, y);  
+            }  
+            // Else discard the next_edge  
+        }  
+        
+        // print the contents of result[] to display the  
+        // built MST  
+        cout<<"Following are the edges in the constructed MST\n";  
+        for (i = 0; i < e; ++i)  
+            cout<<result[i].src<<" -- "<<result[i].dest<<" == "<<result[i].weight<<endl;  
+        return;  
+    }  
+        
+    // Driver code 
+    int main()  
+    {  
+        /* Let us create following weighted graph  
+                10  
+            0--------1  
+            | \ |  
+        6| 5\ |15  
+            | \ |  
+            2--------3  
+                4 */
+        int V = 4; // Number of vertices in graph  
+        int E = 5; // Number of edges in graph  
+        Graph* graph = createGraph(V, E);  
+        
+        
+        // add edge 0-1  
+        graph->edge[0].src = 0;  
+        graph->edge[0].dest = 1;  
+        graph->edge[0].weight = 10;  
+        
+        // add edge 0-2  
+        graph->edge[1].src = 0;  
+        graph->edge[1].dest = 2;  
+        graph->edge[1].weight = 6;  
+        
+        // add edge 0-3  
+        graph->edge[2].src = 0;  
+        graph->edge[2].dest = 3;  
+        graph->edge[2].weight = 5;  
+        
+        // add edge 1-3  
+        graph->edge[3].src = 1;  
+        graph->edge[3].dest = 3;  
+        graph->edge[3].weight = 15;  
+        
+        // add edge 2-3  
+        graph->edge[4].src = 2;  
+        graph->edge[4].dest = 3;  
+        graph->edge[4].weight = 4;  
+        
+        KruskalMST(graph);  
+        
+        return 0;  
+    }  
+        
+    // This code is contributed by rathbhupendra 
                             
             </pre>
         </div>
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of Insertion Sort is: O( n <sup>2</sup> )</p>
+        <p class="content">The Complexity of Kruskal's algorithm is: O( E log V )</p>
         <br>
         <br>
 
