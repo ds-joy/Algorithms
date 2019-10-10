@@ -6,7 +6,7 @@ if (isset($_SESSION['loggedIn']) && isset($_SESSION['name'])) {
     $loggedIn = true;
 }
 
-// 
+// connection
 $conn = new mysqli('localhost', 'root', '', 'Algorithms');
 
 function createCommentRow($data) {
@@ -18,7 +18,7 @@ function createCommentRow($data) {
                 <div class="userComment">'.$data['comment'].'</div>
                 <div class="reply"><a href="javascript:void(0)" data-commentID="'.$data['id'].'" onclick="reply(this)">REPLY</a></div>
                 <div class="replies">';
-
+//show replies
     $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                         AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                         WHERE replies.commentID = '".$data['id']."' 
@@ -35,6 +35,7 @@ function createCommentRow($data) {
     return $response;
 }
 
+//show comments
 if (isset($_POST['getAllComments'])) {
     $start = $conn->real_escape_string($_POST['start']);
 
@@ -49,11 +50,12 @@ if (isset($_POST['getAllComments'])) {
     exit($response);
 }
 
+//add comment or reply
 if (isset($_POST['addComment'])) {
     $comment = $conn->real_escape_string($_POST['comment']);
     $isReply = $conn->real_escape_string($_POST['isReply']);
     $commentID = $conn->real_escape_string($_POST['commentID']);
-
+ //insert into reply
     if ($isReply != 'false') {
         $conn->query("INSERT INTO replies (comment, commentID, userID, createdOn, page_name) 
                       VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'insertion')"
@@ -64,6 +66,7 @@ if (isset($_POST['addComment'])) {
                              WHERE replies.page_name = 'insertion'
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
+        //insert into comments
         $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
                       VALUES ('".$_SESSION['userID']."','$comment',NOW(),'insertion')");
 
@@ -77,6 +80,7 @@ if (isset($_POST['addComment'])) {
     exit(createCommentRow($data));
 }
 
+//registration
 if (isset($_POST['register'])) {
     $name = $conn->real_escape_string($_POST['name']);
     $email = $conn->real_escape_string($_POST['email']);
@@ -87,6 +91,7 @@ if (isset($_POST['register'])) {
         if ($sql->num_rows > 0)
             exit('failedUserExists');
         else {
+            //add new user
             $ePassword = password_hash($password, PASSWORD_BCRYPT);
             $conn->query("INSERT INTO users (name,email,password,createdOn) VALUES ('$name', '$email', '$ePassword', NOW())");
 
@@ -104,10 +109,12 @@ if (isset($_POST['register'])) {
         exit('failedEmail');
 }
 
+//login
 if (isset($_POST['logIn'])) {
     $email = $conn->real_escape_string($_POST['email']);
     $password = $conn->real_escape_string($_POST['password']);
 
+    //validation
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $sql = $conn->query("SELECT id, password, name FROM users WHERE email='$email'");
         if ($sql->num_rows == 0)
@@ -130,6 +137,7 @@ if (isset($_POST['logIn'])) {
         exit('failed');
 }
 
+//showing the number of comments
 $sqlNumComments = $conn->query("SELECT id FROM comments
                                 WHERE comments.page_name = 'insertion'");
 $numComments = $sqlNumComments->num_rows;
@@ -141,7 +149,7 @@ $numComments = $sqlNumComments->num_rows;
 
 
 
-
+<!-- start of html -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -149,11 +157,16 @@ $numComments = $sqlNumComments->num_rows;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
           crossorigin="anonymous">
+
     <link rel="stylesheet" href="../css/home.css">
+
     <link rel="stylesheet" href="insertion.css">
+    
+    <!-- Styling for the comment section -->
     <style type="text/css">
         .comment {
             margin-bottom: 20px;
@@ -332,25 +345,26 @@ $numComments = $sqlNumComments->num_rows;
                 
             </ul>
         </div> <!--col-3.. main div-->
+        
         <div class="col-9 main ">
-        <div class="modal" id="registerModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Registration Form</h5>
+            <div class="modal" id="registerModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Registration Form</h5>
+                        </div>
+                         <div class="modal-body">
+                            <input type="text" id="userName" class="form-control" placeholder="Your Name">
+                            <input type="email" id="userEmail" class="form-control" placeholder="Your Email">
+                            <input type="password" id="userPassword" class="form-control" placeholder="Password">
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" id="registerBtn">Register</button>
+                            <button class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body">
-                <input type="text" id="userName" class="form-control" placeholder="Your Name">
-                <input type="email" id="userEmail" class="form-control" placeholder="Your Email">
-                <input type="password" id="userPassword" class="form-control" placeholder="Password">
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="registerBtn">Register</button>
-                <button class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="modal" id="logInModal">
     <div class="modal-dialog">
