@@ -16,14 +16,15 @@ function createCommentRow($data) {
             <div class="comment">
                 <div class="user">'.$data['name'].' <span class="time">'.$data['createdOn'].'</span></div>
                 <div class="userComment">'.$data['comment'].'</div>
-                <div class="reply"><a href="javascript:void(0)" data-commentID="'.$data['id'].'" onclick="reply(this)">REPLY</a></div>
+                
                 <div class="replies">';
 //show replies
     $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                         AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                         WHERE replies.commentID = '".$data['id']."' 
                         AND replies.page_name = 'insertion'
-                        ORDER BY replies.id DESC LIMIT 1");
+                        ORDER BY replies.id ");
+
     while($dataR = $sql->fetch_assoc())
         $response .= createCommentRow($dataR);
 
@@ -64,7 +65,7 @@ if (isset($_POST['addComment'])) {
         $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                              WHERE replies.page_name = 'insertion'
-                             ORDER BY replies.id DESC LIMIT 1");
+                             ORDER BY replies.id DESC LIMIT 1 ");
     } else {
         //insert into comments
         $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
@@ -139,8 +140,12 @@ if (isset($_POST['logIn'])) {
 
 //showing the number of comments
 $sqlNumComments = $conn->query("SELECT id FROM comments
-                                WHERE comments.page_name = 'insertion'");
+                                WHERE comments.page_name = 'insertion'"); /* here*/
 $numComments = $sqlNumComments->num_rows;
+$sqlNumReply = $conn->query("SELECT id FROM replies
+                                WHERE replies.page_name = 'insertion'");
+$numReplies = $sqlNumReply->num_rows;
+$TotalComments = $numComments+$numReplies;
 ?>
 
 
@@ -170,6 +175,20 @@ $numComments = $sqlNumComments->num_rows;
     <style type="text/css">
         .comment {
             margin-bottom: 20px;
+            min-height: 30px;
+            border-radius: 3px;
+            font-family: Arial;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #797979;
+            position: relative;
+            max-width: 300px;
+            height: auto;
+            margin: 20px 10px;
+            padding: 5px;
+            background-color: #DADADA;
+            border-radius: 3px;
+            border: 5px solid #ccc;
         }
 
         .user {
@@ -187,6 +206,11 @@ $numComments = $sqlNumComments->num_rows;
 
         .replies .comment {
             margin-top: 20px;
+            top: -25px; /* Same as body margin top + border */
+  left: 10px;
+  border-right-color: transparent;
+  border-left-color: transparent;
+  border-top-color: transparent;
 
         }
 
@@ -345,7 +369,7 @@ $numComments = $sqlNumComments->num_rows;
                 
             </ul>
         </div> <!--col-3.. main div-->
-        
+
         <div class="col-9 main ">
             <div class="modal" id="registerModal">
                 <div class="modal-dialog">
@@ -386,7 +410,7 @@ $numComments = $sqlNumComments->num_rows;
 
 <div class="container" style="margin-top:50px;">
     <div class="row">
-        <div class="col-md-12" align="right">
+        <div class="col-md-12" align ="right">
             <?php
             if (!$loggedIn)
                 echo '
@@ -461,7 +485,7 @@ $numComments = $sqlNumComments->num_rows;
         int key = array[step];
         int j = step - 1;
         while (key < array[j] && j >= 0) {
-            // For descending order, change key<array[j] to key>array[j].
+            // For descending order, change key < array[j] to key>array[j].
             array[j + 1] = array[j];
             --j;
             }
@@ -494,7 +518,7 @@ $numComments = $sqlNumComments->num_rows;
     </div>
     <div class="row">
         <div class="col-md-12">
-            <h2><b id="numComments"><?php echo $numComments ?> Comments</b></h2>
+            <h2><b id="numComments"><?php echo $TotalComments ?> Comments</b></h2>
             <div class="userComments">
 
             </div>
@@ -524,7 +548,7 @@ $numComments = $sqlNumComments->num_rows;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script type="text/javascript">
-    var isReply = false, commentID = 0, max = <?php echo $numComments ?>;
+    var isReply = false, commentID = 0, max = <?php echo $TotalComments ?>;
 
     $(document).ready(function () {
         $("#addComment, #addReply").on('click', function () {
