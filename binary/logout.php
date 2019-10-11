@@ -3,6 +3,6 @@
     session_start();
     unset($_SESSION['loggedIn']);
     session_destroy();
-    header('Location: knapsackGreedy.php');
+    header('Location: binary.php');
     exit();
 ?>

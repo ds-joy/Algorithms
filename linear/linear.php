@@ -21,7 +21,7 @@ function createCommentRow($data) {
     $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                         AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                         WHERE replies.commentID = '".$data['id']."' 
-              /* here*/ AND replies.page_name = 'selection' 
+              /* here*/ AND replies.page_name = 'linear' 
                         ORDER BY replies.id DESC LIMIT 1");
     while($dataR = $sql->fetch_assoc())
         $response .= createCommentRow($dataR);
@@ -41,7 +41,7 @@ if (isset($_POST['getAllComments'])) {
     $response = "";
     $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                          AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-               /* here*/ WHERE comments.page_name = 'selection'
+               /* here*/ WHERE comments.page_name = 'linear'
                          ORDER BY comments.id DESC LIMIT $start, 20");
     while($data = $sql->fetch_assoc())
         $response .= createCommentRow($data);
@@ -57,21 +57,21 @@ if (isset($_POST['addComment'])) {
  //insert into reply
     if ($isReply != 'false') {
         $conn->query("INSERT INTO replies (comment, commentID, userID, createdOn, page_name) 
-            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'selection')"
+            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'linear')"
                       );
 
         $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
-                /* here*/             WHERE replies.page_name = 'selection'
+                /* here*/             WHERE replies.page_name = 'linear'
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
         $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-         /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'selection')");
+         /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'linear')");
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-            /* here*/                 WHERE comments.page_name = 'selection'
+            /* here*/                 WHERE comments.page_name = 'linear'
                              ORDER BY comments.id DESC LIMIT 1");
     }
 
@@ -138,10 +138,10 @@ if (isset($_POST['logIn'])) {
 
 //showing the number of comments
 $sqlNumComments = $conn->query("SELECT id FROM comments
-                                WHERE comments.page_name = 'selection'"); /* here*/
+                                WHERE comments.page_name = 'linear'"); /* here*/
 $numComments = $sqlNumComments->num_rows;
 $sqlNumReply = $conn->query("SELECT id FROM replies
-            /* here*/         WHERE replies.page_name = 'selection'");
+            /* here*/         WHERE replies.page_name = 'linear'");
 $numReplies = $sqlNumReply->num_rows;
 $TotalComments = $numComments+$numReplies;
 ?>
@@ -216,7 +216,7 @@ $TotalComments = $numComments+$numReplies;
         }
     </style>
     <!-- here -->
-    <title>Selection Sort</title>
+    <title>Linear Search</title>
     
 </head>
 
@@ -419,23 +419,16 @@ $TotalComments = $numComments+$numReplies;
         </div>
     </div>
     <!-- here -->
-    <h1 id="top">Selection Sort</h1>
+    <h1 id="top">Linear Search</h1>
             <p class="content">
-            Selection sort is conceptually the most simplest sorting algorithm. This algorithm will first find the smallest element in the array and swap it with the element in the first position, then it will find the second smallest element and swap it with the element in the second position, and it will keep on doing this until the entire array is sorted.
+            linear search or sequential search is a method for finding an element within a list. It sequentially checks each element of the list until a match is found or the whole list has been searched.
             </p>
 
             <p class="content">
-            It is called selection sort because it repeatedly selects the next-smallest element and swaps it into the right place.
-            </p>
-            <p class="content">
-            Consider that you have an array with following values {3, 6, 1, 8, 4, 5}. Now as per selection sort, we will start from the first element and look for the smallest number in the array, which is 1 and we will find it at the index 2. Once the smallest number is found, it is swapped with the element at the first position.
-            </p>
-    
-            <p class="content">
-            So, we will now look for the smallest element in the subarray, starting from index 1, to the last index.
-            </p>
+            A linear search runs in at worst linear time and makes at most n comparisons, where n is the length of the list. If each element is equally likely to be searched, then linear search has an average case of n/2 comparisons, but the average case can be affected if the search probabilities for each element vary. Linear search is rarely practical because other search algorithms and schemes, such as the binary search algorithm and hash tables, allow significantly faster searching for all but short lists.
+           
             <div class="anim_container">
-                <img src="../Pic/Selection-Sort-Animation.gif"  alt="selection-sort01" class="img_anim">
+                <img src="../Pic/linear_search.gif"  alt="selection-sort01" class="img_anim">
             </div>
 
             
@@ -446,14 +439,15 @@ $TotalComments = $numComments+$numReplies;
             <div class="font-weight-bold">
             <pre>
                     
-            selectionSort(array, size)
-            repeat (size - 1) times
-            set the first unsorted element as the minimum
-            for each of the unsorted elements
-                if element < currentMinimum
-                set element as new minimum
-            swap minimum with first unsorted position
-            end selectionSort
+            procedure linear_search (list, value)
+
+            for each item in the list
+                if match item == value
+                    return the item's location
+                end if
+            end for
+
+            end procedure
         
             </pre>
             </div>
@@ -463,43 +457,34 @@ $TotalComments = $numComments+$numReplies;
             <div class="bg-dark content">
             <pre class="text-white">
    
-    // Selection sort in C++
+    
     #include &#60iostream>
     using namespace std;
-    void swap(int *a, int *b)
+    void main(){
+    int list[20],size,i,sElement;
+
+    printf("Enter size of the list: ");
+    scanf("%d",&size);
+
+    printf("Enter any %d integer values: ",size);
+    for(i = 0; i < size; i++)
+        scanf("%d",&list[i]);
+
+    printf("Enter the element to be Search: ");
+    scanf("%d",&sElement);
+    
+    // Linear Search Logic
+    for(i = 0; i < size; i++)
     {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
-    }
-    void printArray(int array[], int size)
-    {
-    for (int i = 0; i < size; i++)
-    {
-        cout << array[i] << " ";
-    }
-    cout << endl;
-    }
-    void selectionSort(int array[], int size)
-    {
-    for (int step = 0; step < size - 1; step++)
-    {
-        int min_idx = step;
-        for (int i = step + 1; i < size; i++)
+        if(sElement == list[i])
         {
-        if (array[i] < array[min_idx])
-            min_idx = i;
+            printf("Element is found at %d index", i);
+            break;
         }
-        swap(&array[min_idx], &array[step]);
     }
-    }
-    int main()
-    {
-    int data[] = {20, 12, 10, 15, 2};
-    int size = sizeof(data) / sizeof(data[0]);
-    selectionSort(data, size);
-    cout << "Sorted array in Acsending Order:\n";
-    printArray(data, size);
+    if(i == size)
+        printf("Given element is not found in the list!!!");
+    getch();
     }
                             
             </pre>
@@ -507,7 +492,7 @@ $TotalComments = $numComments+$numReplies;
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of Selection Sort algorithm is : O( n <sup>2</sup> )</p>
+        <p class="content">The Complexity of Linear Search algorithm is : O( n )</p>
         <br>
         <br>
 
@@ -566,7 +551,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (comment.length > 0) {
                 $.ajax({
-                    url: 'selection.php', /* here*/
+                    url: 'linear.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -600,7 +585,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (name != "" && email != "" && password != "") {
                 $.ajax({
-                    url: 'selection.php', /* here*/
+                    url: 'linear.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -627,7 +612,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (email != "" && password != "") {
                 $.ajax({
-                    url: 'selection.php',  /* here*/
+                    url: 'linear.php',  /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -660,7 +645,7 @@ $TotalComments = $numComments+$numReplies;
         }
 
         $.ajax({
-            url: 'selection.php',  /* here*/
+            url: 'linear.php',  /* here*/
             method: 'POST',
             dataType: 'text',
             data: {

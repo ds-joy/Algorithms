@@ -21,7 +21,7 @@ function createCommentRow($data) {
     $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                         AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                         WHERE replies.commentID = '".$data['id']."' 
-              /* here*/ AND replies.page_name = 'knapbru' 
+              /* here*/ AND replies.page_name = 'knapgreedy' 
                         ORDER BY replies.id DESC LIMIT 1");
     while($dataR = $sql->fetch_assoc())
         $response .= createCommentRow($dataR);
@@ -41,7 +41,7 @@ if (isset($_POST['getAllComments'])) {
     $response = "";
     $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                          AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-               /* here*/ WHERE comments.page_name = 'knapbru'
+               /* here*/ WHERE comments.page_name = 'knapgreedy'
                          ORDER BY comments.id DESC LIMIT $start, 20");
     while($data = $sql->fetch_assoc())
         $response .= createCommentRow($data);
@@ -57,21 +57,21 @@ if (isset($_POST['addComment'])) {
  //insert into reply
     if ($isReply != 'false') {
         $conn->query("INSERT INTO replies (comment, commentID, userID, createdOn, page_name) 
-            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'knapbru')"
+            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'knapgreedy')"
                       );
 
         $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
-                /* here*/             WHERE replies.page_name = 'knapbru'
+                /* here*/             WHERE replies.page_name = 'knapgreedy'
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
         $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-         /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'knapbru')");
+         /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'knapgreedy')");
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-            /* here*/                 WHERE comments.page_name = 'knapbru'
+            /* here*/                 WHERE comments.page_name = 'knapgreedy'
                              ORDER BY comments.id DESC LIMIT 1");
     }
 
@@ -138,10 +138,10 @@ if (isset($_POST['logIn'])) {
 
 //showing the number of comments
 $sqlNumComments = $conn->query("SELECT id FROM comments
-                                WHERE comments.page_name = 'knapbru'"); /* here*/
+                                WHERE comments.page_name = 'knapgreedy'"); /* here*/
 $numComments = $sqlNumComments->num_rows;
 $sqlNumReply = $conn->query("SELECT id FROM replies
-            /* here*/         WHERE replies.page_name = 'knapbru'");
+            /* here*/         WHERE replies.page_name = 'knapgreedy'");
 $numReplies = $sqlNumReply->num_rows;
 $TotalComments = $numComments+$numReplies;
 ?>
@@ -216,7 +216,7 @@ $TotalComments = $numComments+$numReplies;
         }
     </style>
     <!-- here -->
-    <title>Knapsack Brute Force</title>
+    <title>Knapsack Greedy</title>
     
 </head>
 
@@ -419,227 +419,119 @@ $TotalComments = $numComments+$numReplies;
         </div>
     </div>
     <!-- here -->
-    <h1 id="top">Knapsack Problem Brute Force Approach</h1>
+    <h1 id="top">Knapsack Problem Greedy</h1>
             <p class="content">
-                    The knapsack problem is defined as - you are given a bag capable of holding finite weight. There are objects in front of you of different weight and different profit associated with them. Your task is to take those objects in the bag to earn a maximum profit.
+                    Among all the algorithmic approaches, the simplest and straightforward approach is the Greedy method. In this approach, the decision is taken on the basis of current available information without worrying about the effect of the current decision in future.
             </p>
 
             <p class="content">
-                    One Way to solve this problem is Brute force technique. In this approach we will check all the possible combinition to find out which combination gives us the maximum profit.
+                    Greedy algorithms build a solution part by part, choosing the next part in such a way, that it gives an immediate benefit. This approach never reconsiders the choices taken previously. This approach is mainly used to solve optimization problems. Greedy method is easy to implement and quite efficient in most of the cases. Hence, we can say that Greedy algorithm is an algorithmic paradigm based on heuristic that follows local optimal choice at each step with the hope of finding global optimal solution.
             </p>
             <p class="content">
-                    As we have to check all the possible condition the complexity will be very high.
+                    An efficient solution to the  is to use Greedy approach. The basic idea of the greedy approach is to calculate the ratio value/weight for each item and sort the item on basis of this ratio. Then take the item with the highest ratio and add them until we can’t add the next item as a whole and at the end add the next item as much as we can. Which will always be the optimal solution to this problem.
             </p>
     
-            
+            <p class="content">
+                  The main concern in this algorithm is to sort the array. The complexity of the algorithm will be same as the complexity of the sorting algorithm. As we are going to use the quick sort our complexity will be nlogn.  
+            </p>
             
             
 
-            
+            <!-- pseudocode -->
+            <h4 class="content"> Here is the pseudocode: </h4>
+            <br>
+            <div class="font-weight-bold">
+            <pre>
+                    
+            1.Sort the array by profit
+            2.check if the weight 
+              limit is being crossed
+            3.If not add the weight to 
+              bag_weight
+            4.add profit to total_profit
+        
+            </pre>
+            </div>
 
             <!-- Code -->
             <h4 class="content"> CODE:</h4>
             <div class="bg-dark content">
             <pre class="text-white">
    
-    #include &#60bits/stdc++.h>
-
-    using namespace std;
-    
-    int weight[10000];
-    int profit[10000];
-    int x[10000];
-    
-    int max_weight1;
-    int max_weight2;
-    int count_profit1;
-    int count_profit2;
-    int N;
-    int temporary1;
-    int temporary2;
-    
-    void brute_force();
-    void greedy();
-    int partitioned(int start, int stop);
-    void quick_sort(int start, int stop);
-    
-    
-    
-    
-    int main()
-    {
-        cout << "How much object do you need : ";
-        cin >> N;
-    
-        cout << endl << "Weight : ";
-        for(int i=0;i < N;i++)
-        {
-            weight[i]=rand()%100;
-            max_weight1 = max_weight1 + weight[i];
-            cout << weight[i] << ends;
-        }
-        cout << endl;
-    
-        max_weight1 = (max_weight1 * 0.7);
-        max_weight2 = max_weight1;
-    
-        cout << "Profit : ";
-        for(int i=0;i < N;i++)
-        {
-            profit[i]=rand()%100;
-            cout << profit[i] << ends;
-        }
-        cout << endl;
-    
-        clock_t b1,e1,b2,e2;
-        b1 = clock();
-        brute_force();
-        e1 = clock();
-        cout << "Brute Force Time : " << (double)(e1 - b1)<< endl;
-        b2 = clock();
-        greedy();
-        e2 = clock();
-        cout << "Greedy Time : " << (double)(e2 - b2)<< endl;
-        return 0;
-    }
-                    
-                    
-        void brute_force()
-        {
-            for(int i=0; i < N; i++)
-            {
-                count_profit1 = 0;
-                max_weight1 = max_weight2;
-                for(int j=i; j < N;j++)
-                {
-                    if(weight[j] < = max_weight1)
-                    {
-                        max_weight1 = max_weight1 - weight[j];
-                        count_profit1 = count_profit1 + profit[j];
-                    }
-                }
+    // C/C++ program to solve fractional Knapsack Problem 
+    #include &#60bits/stdc++.h> 
+    using namespace std; 
         
-                if(count_profit2 < count_profit1)
-                {
-                    count_profit2 = count_profit1;
+    // Structure for an item which stores weight and corresponding 
+    // value of Item 
+    struct Item { 
+        int value, weight; 
         
-                    for(int j=0;j < N;j++)
-                            x[j] = 0;
-                    max_weight1 = max_weight2;
+        // Constructor 
+        Item(int value, int weight) : value(value), weight(weight) {} 
+    }; 
         
-                    for(int j=0;j < N;j++)
-                        if(weight[j] < = max_weight1)
-                        {
-                            max_weight1 = max_weight1 - weight[j];
-                            x[j] = 1;
-                        }
+    // Comparison function to sort Item according to val/weight ratio 
+    bool cmp(struct Item a, struct Item b) { 
+        double r1 = (double)a.value / a.weight; 
+        double r2 = (double)b.value / b.weight; 
+        return r1 > r2; 
+    } 
         
-                }
-            }
+    // Main greedy function to solve problem 
+    double fractionalKnapsack(int W, struct Item arr[], int n) { 
+        //    sorting Item on basis of ratio 
+        sort(arr, arr + n, cmp); 
         
-            cout << "N : " << N << endl;
-            cout<< "W : "<< max_weight2<< endl;
-            
-            cout<< "Brute Force Object : ";
-            for(int i=0;i < N;i++)
-                if(x[i]==1)
-                    cout<< i+1 << ends;
-            cout << endl;
+        //    Uncomment to see new order of Items with their ratio 
+        /* 
+        for (int i = 0; i < n; i++) { 
+            cout << arr[i].value << "  " << arr[i].weight << " : " 
+                    << ((double)arr[i].value / arr[i].weight) << endl; 
+        } 
+        */
         
-            cout<< "Profit : "<< count_profit2 << endl;
-        }
+        int curWeight = 0;  // Current weight in knapsack 
+        double finalvalue = 0.0; // Result (value in Knapsack) 
         
-                    void greedy()
-                    {
-                        count_profit1 = 0;
-                        max_weight1 = max_weight2;
-                        quick_sort(0,N-1);
-                    
-                        cout<< endl << "Sorted Profit : ";
-                        for(int i=0;i < N;i++)
-                        {
-                            cout<< profit[i] << ends;
-                        }
-                        cout << endl;
-                    
-                        cout << "Weight after sorting profit : ";
-                        for(int i=0;i < N;i++)
-                        {
-                            cout << weight[i] << ends;
-                        }
-                        cout << endl;
-                    
-                        for(int j=0;j < N;j++)
-                            x[j] = 0;
-                    
-                        for(int i=N-1;i>=0;i--)
-                        {
-                            if(weight[i] < = max_weight1)
-                            {
-                                x[i]=1;
-                                max_weight1 = max_weight1 - weight[i];
-                                count_profit1 = count_profit1 + profit[i];
-                            }
-                        }
-                    
-                        cout << "Greedy Object : ";
-                        for(int i=0;i < N;i++)
-                            if(x[i] == 1 )
-                                cout << i+1 << ends;
-                        cout<< endl;
-                        cout<< "Profit : "<< count_profit1<< endl;
-                    
-                    }
-                                      
-                    int partitioned(int start, int stop)
-                    {
-                        int pivot = profit[start];
-                        int i = stop+1;
-                        for(int j=stop;j>start;j--)
-                        {
-                            if(pivot< profit[j])
-                            {
-                                i--;
-                                temporary1 = profit[i];
-                                profit[i]=profit[j];
-                                profit[j]=temporary1;
-                    
-                                temporary2 = weight[i];
-                                weight[i]=weight[j];
-                                weight[j]=temporary2;
-                    
-                            }
-                        }
-                        i--;
-                        temporary1 = profit[i];
-                        profit[i]=profit[start];
-                        profit[start]=temporary1;
-                    
-                        temporary2 = weight[i];
-                        weight[i]=weight[start];
-                        weight[start]=temporary2;
-                    
-                        return i;
-                    }
-                    
-                    void quick_sort(int start, int stop)
-                    {
-                        if(start < stop)
-                        {
-                            int position = partitioned(start, stop);
-                            quick_sort(start, position-1);
-                            quick_sort(position+1, stop);
-                        }
-                    }
-                    
-                    
+        // Looping through all Items 
+        for (int i = 0; i < n; i++) { 
+            // If adding Item won't overflow, add it completely 
+            if (curWeight + arr[i].weight <= W) { 
+                curWeight += arr[i].weight; 
+                finalvalue += arr[i].value; 
+            } 
+        
+            // If we can't add current Item, add fractional part of it 
+            else { 
+                int remain = W - curWeight; 
+                finalvalue += arr[i].value * ((double) remain / arr[i].weight); 
+                break; 
+            } 
+        } 
+        
+        // Returning final value 
+        return finalvalue; 
+    } 
+        
+    // driver program to test above function 
+    int main() { 
+        int W = 50;   //    Weight of knapsack 
+        Item arr[] = {{60, 10}, {100, 20}, {120, 30}}; 
+        
+        int n = sizeof(arr) / sizeof(arr[0]); 
+        
+        cout << "Maximum value we can obtain = "
+                << fractionalKnapsack(W, arr, n); 
+        return 0; 
+    } 
                             
             </pre>
         </div>
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of Knapsack Brute Force algorithm is : O( n <sup>n</sup> )</p>
+        <p class="content">The Complexity of Knapsack Greedy algorithm is : O( nlogn )</p>
         <br>
         <br>
 
@@ -698,7 +590,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (comment.length > 0) {
                 $.ajax({
-                    url: 'KnapsackBrute.php', /* here*/
+                    url: 'knapsackGreedy.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -732,7 +624,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (name != "" && email != "" && password != "") {
                 $.ajax({
-                    url: 'KnapsackBrute.php', /* here*/
+                    url: 'knapsackGreedy.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -759,7 +651,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (email != "" && password != "") {
                 $.ajax({
-                    url: 'KnapsackBrute.php',  /* here*/
+                    url: 'knapsackGreedy.php',  /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -792,7 +684,7 @@ $TotalComments = $numComments+$numReplies;
         }
 
         $.ajax({
-            url: 'KnapsackBrute.php',  /* here*/
+            url: 'knapsackGreedy.php',  /* here*/
             method: 'POST',
             dataType: 'text',
             data: {
