@@ -21,7 +21,7 @@ function createCommentRow($data) {
     $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                         AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                         WHERE replies.commentID = '".$data['id']."' 
-              /* here*/ AND replies.page_name = 'kruskal' 
+              /* here*/ AND replies.page_name = 'knapbru' 
                         ORDER BY replies.id DESC LIMIT 1");
     while($dataR = $sql->fetch_assoc())
         $response .= createCommentRow($dataR);
@@ -41,7 +41,7 @@ if (isset($_POST['getAllComments'])) {
     $response = "";
     $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                          AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-               /* here*/ WHERE comments.page_name = 'kruskal'
+               /* here*/ WHERE comments.page_name = 'knapbru'
                          ORDER BY comments.id DESC LIMIT $start, 20");
     while($data = $sql->fetch_assoc())
         $response .= createCommentRow($data);
@@ -57,21 +57,21 @@ if (isset($_POST['addComment'])) {
  //insert into reply
     if ($isReply != 'false') {
         $conn->query("INSERT INTO replies (comment, commentID, userID, createdOn, page_name) 
-            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'kruskal')"
+            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'knapbru')"
                       );
 
         $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
-                /* here*/             WHERE replies.page_name = 'kruskal'
+                /* here*/             WHERE replies.page_name = 'knapbru'
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
         $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-         /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'kruskal')");
+         /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'knapbru')");
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-            /* here*/                 WHERE comments.page_name = 'kruskal'
+            /* here*/                 WHERE comments.page_name = 'knapbru'
                              ORDER BY comments.id DESC LIMIT 1");
     }
 
@@ -138,10 +138,10 @@ if (isset($_POST['logIn'])) {
 
 //showing the number of comments
 $sqlNumComments = $conn->query("SELECT id FROM comments
-                                WHERE comments.page_name = 'kruskal'"); /* here*/
+                                WHERE comments.page_name = 'knapbru'"); /* here*/
 $numComments = $sqlNumComments->num_rows;
 $sqlNumReply = $conn->query("SELECT id FROM replies
-            /* here*/         WHERE replies.page_name = 'kruskal'");
+            /* here*/         WHERE replies.page_name = 'knapbru'");
 $numReplies = $sqlNumReply->num_rows;
 $TotalComments = $numComments+$numReplies;
 ?>
@@ -216,7 +216,7 @@ $TotalComments = $numComments+$numReplies;
         }
     </style>
     <!-- here -->
-    <title>Kruskal's Algorithm</title>
+    <title>Knapsack Brute Force</title>
     
 </head>
 
@@ -419,255 +419,231 @@ $TotalComments = $numComments+$numReplies;
         </div>
     </div>
     <!-- here -->
-    <h1 id="top">Kruskal's Algorithm</h1>
+    <h1 id="top">Knapsack Problem Brute Force Approach</h1>
             <p class="content">
-                    Kruskal’s algorithm finds a safe edge to add to the growing forest by finding, of all
-                    the edges that connect any two trees in the forest, an edge (u,v) of least weight.
-                    Let C1 and C2 denote the two trees that are connected by (u,v). Since (u,v) must
-                    be a light edge connecting C1 to some other tree, (u,v) is a safe edge for C1. Kruskal’s algorithm qualifies as a greedy algorithm because at each step it adds to the forest an edge of least possible weight.
-                 
+                    The knapsack problem is defined as - you are given a bag capable of holding finite weight. There are objects in front of you of different weight and different profit associated with them. Your task is to take those objects in the bag to earn a maximum profit.
             </p>
 
             <p class="content">
-                    Our implementation of Kruskal’s algorithm is like the algorithm to compute
-                    connected components from Section 21.1. It uses a disjoint-set data structure to
-                    maintain several disjoint sets of elements. Each set contains the vertices in one tree
-                    of the current forest. The operation FIND-SET(u) returns a representative element
-                    from the set that contains u. Thus, we can determine whether two vertices u and v
-                    belong to the same tree by testing whether FIND-SET(u) equals FIND-SET(v) To
-                    combine trees, Kruskal’s algorithm calls the UNION procedure.
+                    One Way to solve this problem is Brute force technique. In this approach we will check all the possible combinition to find out which combination gives us the maximum profit.
             </p>
-           
+            <p class="content">
+                    As we have to check all the possible condition the complexity will be very high.
+            </p>
+    
             
-            <h4 class="content"> Here is an animation explaining Kruskal's Algorithm: </h4>
+            
+            
 
-            <!--A gif explaining insertion sort  -->
-            <div class="anim_container">
-                <img src="../Pic/KruskalDemo.gif" alt="Kruskal" class="img_anim">
-            </div>
-
-            <!-- pseudocode -->
-            <h4 class="content"> Here is the pseudocode: </h4>
-            <br>
-            <div class="font-weight-bold">
-            <pre>
-                KRUSKAL(G):
-                A = ∅
-                foreach v ∈ G.V:
-                    MAKE-SET(v)
-                foreach (u, v) in G.E ordered by weight(u, v), increasing:
-                    if FIND-SET(u) ≠ FIND-SET(v):
-                        A = A ∪ {(u, v)}
-                        UNION(FIND-SET(u), FIND-SET(v))
-                return A
-            </pre>
-            </div>
+            
 
             <!-- Code -->
             <h4 class="content"> CODE:</h4>
             <div class="bg-dark content">
             <pre class="text-white">
    
-    // C++ program for Kruskal's algorithm to find Minimum Spanning Tree  
-    // of a given connected, undirected and weighted graph  
-    #include &#60bits/stdc++.h> 
-    using namespace std; 
+    #include &#60bits/stdc++.h>
+
+    using namespace std;
+    
+    int weight[10000];
+    int profit[10000];
+    int x[10000];
+    
+    int max_weight1;
+    int max_weight2;
+    int count_profit1;
+    int count_profit2;
+    int N;
+    int temporary1;
+    int temporary2;
+    
+    void brute_force();
+    void greedy();
+    int partitioned(int start, int stop);
+    void quick_sort(int start, int stop);
+    
+    
+    
+    
+    int main()
+    {
+        cout << "How much object do you need : ";
+        cin >> N;
+    
+        cout << endl << "Weight : ";
+        for(int i=0;i < N;i++)
+        {
+            weight[i]=rand()%100;
+            max_weight1 = max_weight1 + weight[i];
+            cout << weight[i] << ends;
+        }
+        cout << endl;
+    
+        max_weight1 = (max_weight1 * 0.7);
+        max_weight2 = max_weight1;
+    
+        cout << "Profit : ";
+        for(int i=0;i < N;i++)
+        {
+            profit[i]=rand()%100;
+            cout << profit[i] << ends;
+        }
+        cout << endl;
+    
+        clock_t b1,e1,b2,e2;
+        b1 = clock();
+        brute_force();
+        e1 = clock();
+        cout << "Brute Force Time : " << (double)(e1 - b1)<< endl;
+        b2 = clock();
+        greedy();
+        e2 = clock();
+        cout << "Greedy Time : " << (double)(e2 - b2)<< endl;
+        return 0;
+    }
+                    
+                    
+        void brute_force()
+        {
+            for(int i=0; i < N; i++)
+            {
+                count_profit1 = 0;
+                max_weight1 = max_weight2;
+                for(int j=i; j < N;j++)
+                {
+                    if(weight[j] < = max_weight1)
+                    {
+                        max_weight1 = max_weight1 - weight[j];
+                        count_profit1 = count_profit1 + profit[j];
+                    }
+                }
         
-    // a structure to represent a weighted edge in graph  
-    class Edge  
-    {  
-        public: 
-        int src, dest, weight;  
-    };  
+                if(count_profit2 < count_profit1)
+                {
+                    count_profit2 = count_profit1;
         
-    // a structure to represent a connected, undirected  
-    // and weighted graph  
-    class Graph  
-    {  
-        public: 
-        // V-> Number of vertices, E-> Number of edges  
-        int V, E;  
+                    for(int j=0;j < N;j++)
+                            x[j] = 0;
+                    max_weight1 = max_weight2;
         
-        // graph is represented as an array of edges.  
-        // Since the graph is undirected, the edge  
-        // from src to dest is also edge from dest  
-        // to src. Both are counted as 1 edge here.  
-        Edge* edge;  
-    };  
+                    for(int j=0;j < N;j++)
+                        if(weight[j] < = max_weight1)
+                        {
+                            max_weight1 = max_weight1 - weight[j];
+                            x[j] = 1;
+                        }
         
-    // Creates a graph with V vertices and E edges  
-    Graph* createGraph(int V, int E)  
-    {  
-        Graph* graph = new Graph;  
-        graph->V = V;  
-        graph->E = E;  
+                }
+            }
         
-        graph->edge = new Edge[E];  
+            cout << "N : " << N << endl;
+            cout<< "W : "<< max_weight2<< endl;
+            
+            cout<< "Brute Force Object : ";
+            for(int i=0;i < N;i++)
+                if(x[i]==1)
+                    cout<< i+1 << ends;
+            cout << endl;
         
-        return graph;  
-    }  
+            cout<< "Profit : "<< count_profit2 << endl;
+        }
         
-    // A structure to represent a subset for union-find  
-    class subset  
-    {  
-        public: 
-        int parent;  
-        int rank;  
-    };  
-        
-    // A utility function to find set of an element i  
-    // (uses path compression technique)  
-    int find(subset subsets[], int i)  
-    {  
-        // find root and make root as parent of i  
-        // (path compression)  
-        if (subsets[i].parent != i)  
-            subsets[i].parent = find(subsets, subsets[i].parent);  
-        
-        return subsets[i].parent;  
-    }  
-        
-    // A function that does union of two sets of x and y  
-    // (uses union by rank)  
-    void Union(subset subsets[], int x, int y)  
-    {  
-        int xroot = find(subsets, x);  
-        int yroot = find(subsets, y);  
-        
-        // Attach smaller rank tree under root of high  
-        // rank tree (Union by Rank)  
-        if (subsets[xroot].rank < subsets[yroot].rank)  
-            subsets[xroot].parent = yroot;  
-        else if (subsets[xroot].rank > subsets[yroot].rank)  
-            subsets[yroot].parent = xroot;  
-        
-        // If ranks are same, then make one as root and  
-        // increment its rank by one  
-        else
-        {  
-            subsets[yroot].parent = xroot;  
-            subsets[xroot].rank++;  
-        }  
-    }  
-        
-    // Compare two edges according to their weights.  
-    // Used in qsort() for sorting an array of edges  
-    int myComp(const void* a, const void* b)  
-    {  
-        Edge* a1 = (Edge*)a;  
-        Edge* b1 = (Edge*)b;  
-        return a1->weight > b1->weight;  
-    }  
-        
-    // The main function to construct MST using Kruskal's algorithm  
-    void KruskalMST(Graph* graph)  
-    {  
-        int V = graph->V;  
-        Edge result[V]; // Tnis will store the resultant MST  
-        int e = 0; // An index variable, used for result[]  
-        int i = 0; // An index variable, used for sorted edges  
-        
-        // Step 1: Sort all the edges in non-decreasing  
-        // order of their weight. If we are not allowed to  
-        // change the given graph, we can create a copy of  
-        // array of edges  
-        qsort(graph->edge, graph->E, sizeof(graph->edge[0]), myComp);  
-        
-        // Allocate memory for creating V ssubsets  
-        subset *subsets = new subset[( V * sizeof(subset) )];  
-        
-        // Create V subsets with single elements  
-        for (int v = 0; v < V; ++v)  
-        {  
-            subsets[v].parent = v;  
-            subsets[v].rank = 0;  
-        }  
-        
-        // Number of edges to be taken is equal to V-1  
-        while (e < V - 1 && i < graph->E)  
-        {  
-            // Step 2: Pick the smallest edge. And increment  
-            // the index for next iteration  
-            Edge next_edge = graph->edge[i++];  
-        
-            int x = find(subsets, next_edge.src);  
-            int y = find(subsets, next_edge.dest);  
-        
-            // If including this edge does't cause cycle,  
-            // include it in result and increment the index  
-            // of result for next edge  
-            if (x != y)  
-            {  
-                result[e++] = next_edge;  
-                Union(subsets, x, y);  
-            }  
-            // Else discard the next_edge  
-        }  
-        
-        // print the contents of result[] to display the  
-        // built MST  
-        cout<<"Following are the edges in the constructed MST\n";  
-        for (i = 0; i < e; ++i)  
-            cout << result[i].src<<" -- "<< result[i].dest<<" == " << result[i].weight << endl;  
-        return;  
-    }  
-        
-    // Driver code 
-    int main()  
-    {  
-        /* Let us create following weighted graph  
-                10  
-            0--------1  
-            | \ |  
-        6| 5\ |15  
-            | \ |  
-            2--------3  
-                4 */
-        int V = 4; // Number of vertices in graph  
-        int E = 5; // Number of edges in graph  
-        Graph* graph = createGraph(V, E);  
-        
-        
-        // add edge 0-1  
-        graph->edge[0].src = 0;  
-        graph->edge[0].dest = 1;  
-        graph->edge[0].weight = 10;  
-        
-        // add edge 0-2  
-        graph->edge[1].src = 0;  
-        graph->edge[1].dest = 2;  
-        graph->edge[1].weight = 6;  
-        
-        // add edge 0-3  
-        graph->edge[2].src = 0;  
-        graph->edge[2].dest = 3;  
-        graph->edge[2].weight = 5;  
-        
-        // add edge 1-3  
-        graph->edge[3].src = 1;  
-        graph->edge[3].dest = 3;  
-        graph->edge[3].weight = 15;  
-        
-        // add edge 2-3  
-        graph->edge[4].src = 2;  
-        graph->edge[4].dest = 3;  
-        graph->edge[4].weight = 4;  
-        
-        KruskalMST(graph);  
-        
-        return 0;  
-    }  
-        
-    // This code is contributed by rathbhupendra 
+                    void greedy()
+                    {
+                        count_profit1 = 0;
+                        max_weight1 = max_weight2;
+                        quick_sort(0,N-1);
+                    
+                        cout<< endl << "Sorted Profit : ";
+                        for(int i=0;i < N;i++)
+                        {
+                            cout<< profit[i] << ends;
+                        }
+                        cout << endl;
+                    
+                        cout << "Weight after sorting profit : ";
+                        for(int i=0;i < N;i++)
+                        {
+                            cout << weight[i] << ends;
+                        }
+                        cout << endl;
+                    
+                        for(int j=0;j < N;j++)
+                            x[j] = 0;
+                    
+                        for(int i=N-1;i>=0;i--)
+                        {
+                            if(weight[i] < = max_weight1)
+                            {
+                                x[i]=1;
+                                max_weight1 = max_weight1 - weight[i];
+                                count_profit1 = count_profit1 + profit[i];
+                            }
+                        }
+                    
+                        cout << "Greedy Object : ";
+                        for(int i=0;i < N;i++)
+                            if(x[i] == 1 )
+                                cout << i+1 << ends;
+                        cout<< endl;
+                        cout<< "Profit : "<< count_profit1<< endl;
+                    
+                    }
+                                      
+                    int partitioned(int start, int stop)
+                    {
+                        int pivot = profit[start];
+                        int i = stop+1;
+                        for(int j=stop;j>start;j--)
+                        {
+                            if(pivot< profit[j])
+                            {
+                                i--;
+                                temporary1 = profit[i];
+                                profit[i]=profit[j];
+                                profit[j]=temporary1;
+                    
+                                temporary2 = weight[i];
+                                weight[i]=weight[j];
+                                weight[j]=temporary2;
+                    
+                            }
+                        }
+                        i--;
+                        temporary1 = profit[i];
+                        profit[i]=profit[start];
+                        profit[start]=temporary1;
+                    
+                        temporary2 = weight[i];
+                        weight[i]=weight[start];
+                        weight[start]=temporary2;
+                    
+                        return i;
+                    }
+                    
+                    void quick_sort(int start, int stop)
+                    {
+                        if(start < stop)
+                        {
+                            int position = partitioned(start, stop);
+                            quick_sort(start, position-1);
+                            quick_sort(position+1, stop);
+                        }
+                    }
+                    
+                    
                             
             </pre>
         </div>
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of Kruskal's algorithm is: O( E log V )</p>
+        <p class="content">The Complexity of Knapsack Brute Force algorithm is : O( n <sup>n</sup> )</p>
         <br>
         <br>
+
+
     <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
        
     </div>
@@ -722,7 +698,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (comment.length > 0) {
                 $.ajax({
-                    url: 'kruskal.php', /* here*/
+                    url: 'KnapsackBrute.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -756,7 +732,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (name != "" && email != "" && password != "") {
                 $.ajax({
-                    url: 'kruskal.php', /* here*/
+                    url: 'KnapsackBrute.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -783,7 +759,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (email != "" && password != "") {
                 $.ajax({
-                    url: 'kruskal.php',  /* here*/
+                    url: 'KnapsackBrute.php',  /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -816,7 +792,7 @@ $TotalComments = $numComments+$numReplies;
         }
 
         $.ajax({
-            url: 'kruskal.php',  /* here*/
+            url: 'KnapsackBrute.php',  /* here*/
             method: 'POST',
             dataType: 'text',
             data: {

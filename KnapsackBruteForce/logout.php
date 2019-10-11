@@ -3,6 +3,6 @@
     session_start();
     unset($_SESSION['loggedIn']);
     session_destroy();
-    header('Location: home.php');
+    header('Location: KnapsackBrute.php');
     exit();
 ?>
