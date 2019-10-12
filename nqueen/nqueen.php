@@ -16,13 +16,12 @@ function createCommentRow($data) {
             <div class="comment">
                 <div class="user">'.$data['name'].' <span class="time">'.$data['createdOn'].'</span></div>
                 <div class="userComment">'.$data['comment'].'</div>
-                <div class="reply"><a href="javascript:void(0)" data-commentID="'.$data['id'].'" onclick="reply(this)">REPLY</a></div>
                 <div class="replies">';
 //show replies
     $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                         AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                         WHERE replies.commentID = '".$data['id']."' 
-              /* here*/ AND replies.page_name = 'bubble' 
+              /* here*/ AND replies.page_name = 'nqueen' 
                         ORDER BY replies.id DESC LIMIT 1");
     while($dataR = $sql->fetch_assoc())
         $response .= createCommentRow($dataR);
@@ -42,7 +41,7 @@ if (isset($_POST['getAllComments'])) {
     $response = "";
     $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                          AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-               /* here*/ WHERE comments.page_name = 'bubble'
+               /* here*/ WHERE comments.page_name = 'nqueen'
                          ORDER BY comments.id DESC LIMIT $start, 20");
     while($data = $sql->fetch_assoc())
         $response .= createCommentRow($data);
@@ -58,21 +57,28 @@ if (isset($_POST['addComment'])) {
  //insert into reply
     if ($isReply != 'false') {
         $conn->query("INSERT INTO replies (comment, commentID, userID, createdOn, page_name) 
-                      VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'insertion')"
+            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'nqueen')"
                       );
 
         $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
-                /* here*/             WHERE replies.page_name = 'bubble'
+                /* here*/             WHERE replies.page_name = 'nqueen'
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
-        $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-                      VALUES ('".$_SESSION['userID']."','$comment',NOW(),'insertion')");
+        if($loggedIn != true)
+        {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+         /* here*/              VALUES ('9','$comment',NOW(),'nqueen')");
+        } else {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+            /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'nqueen')");
+        }
+        
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-            /* here*/                 WHERE comments.page_name = 'bubble'
+            /* here*/                 WHERE comments.page_name = 'nqueen'
                              ORDER BY comments.id DESC LIMIT 1");
     }
 
@@ -139,8 +145,12 @@ if (isset($_POST['logIn'])) {
 
 //showing the number of comments
 $sqlNumComments = $conn->query("SELECT id FROM comments
-                                WHERE comments.page_name = 'bubble'"); /* here*/
+                                WHERE comments.page_name = 'nqueen'"); /* here*/
 $numComments = $sqlNumComments->num_rows;
+$sqlNumReply = $conn->query("SELECT id FROM replies
+            /* here*/         WHERE replies.page_name = 'nqueen'");
+$numReplies = $sqlNumReply->num_rows;
+$TotalComments = $numComments+$numReplies;
 ?>
 
 
@@ -170,6 +180,20 @@ $numComments = $sqlNumComments->num_rows;
     <style type="text/css">
         .comment {
             margin-bottom: 20px;
+            min-height: 30px;
+            border-radius: 3px;
+            font-family: Arial;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #797979;
+            position: relative;
+            max-width: 300px;
+            height: auto;
+            margin: 20px 10px;
+            padding: 5px;
+            background-color: #DADADA;
+            border-radius: 3px;
+            border: 5px solid #ccc;
         }
 
         .user {
@@ -198,7 +222,7 @@ $numComments = $sqlNumComments->num_rows;
             margin-top: 10px;
         }
     </style>
-    <title>Insertion Sort</title>
+    <title>N Queen</title>
     
 </head>
 
@@ -251,7 +275,7 @@ $numComments = $sqlNumComments->num_rows;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../Bubble/ubble.php"> <i>Bubble Sort</i> </a>
+                        <a href="../Bubble/bubble.php"> <i>Bubble Sort</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../selection/selection.php"> <i>Selection Sort</i> </a>
@@ -263,7 +287,7 @@ $numComments = $sqlNumComments->num_rows;
                         <a href="../Merge_sort/mergeSort.php"> <i>Merge Sort</i> </a>
                     </li>
                     <li class="list-group-item"> 
-                        <a href="../Quick_sort/quickSort.php"> <i>Quick Sort</i> </a>
+                        <a href="quickSort.php"> <i>Quick Sort</i> </a>
                     </li>
                 </ol><!-- sorting -->
 
@@ -273,10 +297,10 @@ $numComments = $sqlNumComments->num_rows;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../search/linear.php"> <i>Linear Search</i> </a>
+                        <a href="../linear/linear.php"> <i>Linear Search</i> </a>
                     </li>
                     <li class="list-group-item"> 
-                        <a href="../search/binary.php"> <i> Binary Search </i> </a>
+                        <a href="../binary/binary.php"> <i> Binary Search </i> </a>
                     </li>
                 </ol>
 
@@ -306,7 +330,7 @@ $numComments = $sqlNumComments->num_rows;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../Greedy/Coin.php"> <i>Coin Change</i> </a>
+                        <a href="../coin/Coin.php"> <i>Coin Change</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../KnapsackBruteForce/KnapsackBrute.php"> <i>Knapsack Brute Force</i> </a>
@@ -337,7 +361,7 @@ $numComments = $sqlNumComments->num_rows;
                 </li>
                 <ol>
                 <li class="list-group-item"> 
-                        <a href="../nqueen/nqueen.php"> <i>N Queen</i> </a>
+                        <a href="nqueen.php"> <i>N Queen</i> </a>
                     </li>
 
                 </ol>
@@ -400,21 +424,29 @@ $numComments = $sqlNumComments->num_rows;
             ?>
         </div>
     </div>
-    <h1 id="top">Insertion Sort</h1>
+    <!-- here -->
+    <h1 id="top">N Queen</h1>
             <p class="content">
-                This is an in-place comparison-based sorting algorithm. Here, a sub-list is maintained which is always sorted. For example, the lower part of an array is maintained to be sorted. An element which is to be 'insert'ed in this sorted sub-list, has to find its appropriate place and then it has to be inserted there. Hence the name, <b>insertion sort.</b> 
+            Backtracking is a general algorithm for finding all (or some) solutions to some computational problems, notably constraint satisfaction problems, that incrementally builds candidates to the solutions, and abandons a candidate ("backtracks") as soon as it determines that the candidate cannot possibly be completed to a valid solution.
+                
+            </p>
+            <p class="content">
+            The classic textbook example of the use of backtracking is the eight queens puzzle, that asks for all arrangements of eight chess queens on a standard chessboard so that no queen attacks any other. In the common backtracking approach, the partial candidates are arrangements of k queens in the first k rows of the board, all in different rows and columns. Any partial solution that contains two mutually attacking queens can be abandoned.
             </p>
 
             <p class="content">
-                Insertion sort iterates, consuming one input element each repetition, and growing a sorted output list. At each iteration, insertion sort removes one element from the input data, finds the location it belongs within the sorted list, and inserts it there. It repeats until no input elements remain.
-                Sorting is typically done in-place, by iterating up the array, growing the sorted list behind it. At each array-position, it checks the value there against the largest value in the sorted list (which happens to be next to it, in the previous array-position checked). If larger, it leaves the element in place and moves to the next. If smaller, it finds the correct position within the sorted list, shifts all the larger values up to make a space, and inserts into that correct position.
+            Backtracking can be applied only for problems which admit the concept of a "partial candidate solution" and a relatively quick test of whether it can possibly be completed to a valid solution. It is useless, for example, for locating a given value in an unordered table. When it is applicable, however, backtracking is often much faster than brute force enumeration of all complete candidates, since it can eliminate many candidates with a single test.
             </p>
+
             
-            <h4 class="content"> Here is an animation explaining Insertion Sort: </h4>
 
-            <!--A gif explaining insertion sort  -->
+            
+            
+            <h4 class="content"> Here is an animation explaining n queen problem: </h4>
+
+            <!-- A gif explaining insertion sort  -->
             <div class="anim_container">
-                <img src="../Pic/Insertion-sort01.gif" alt="Insertion-sort01" class="img_anim">
+                <img src="../Pic/Eight-queens-animation.gif" alt="Insertion-sort01" class="img_anim">
             </div>
 
             <!-- pseudocode -->
@@ -422,15 +454,18 @@ $numComments = $sqlNumComments->num_rows;
             <br>
             <div class="font-weight-bold">
             <pre>
-                    INSERTION-SORT (A)
-                     for j = 2 to A:length
-                     key = A[j]
-                     // Insert A[j] into the sorted sequence A[1 .. j-1].
-                     i = j - 1
-                     while i > 0 and A[i] > key
-                     A[i+1] = A[j]
-                     i = i - 1
-                     A[i+1] = key
+                Begin
+                if all columns are filled, then
+                    return true
+                for each row of the board, do
+                    if isValid(board, i, col), then
+                        set queen at place (i, col) in the board
+                        if solveNQueen(board, col+1) = true, then
+                            return true
+                        otherwise remove queen from place (i, col) from board.
+                done
+                return false
+                End
             </pre>
             </div>
 
@@ -442,47 +477,71 @@ $numComments = $sqlNumComments->num_rows;
     #include &#60iostream>
     using namespace std;
         
-    int main() {
-        int data[] = {9, 5, 1, 4, 3};
-        int size = sizeof(data) / sizeof(data[0]);
-        
-        //This function sorts the array 
-        //using insertion sort algorithm
-        insertionSort(data, size);
-        
-        cout << "Sorted array in ascending order:\n";
-        
-        //This function Prints array
-        printArray(data, size);
-    }
-    
-    void insertionSort(int array[], int size) {
-        for (int step = 1; step < size; step++) {
-        int key = array[step];
-        int j = step - 1;
-        while (key < array[j] && j >= 0) {
-            // For descending order, change key < array[j] to key>array[j].
-            array[j + 1] = array[j];
-            --j;
-            }
-        array[j + 1] = key;
-        }
-    }
-    void printArray(int array[], int size) {
-        for (int i = 0; i < size; i++) {
-        cout << array[i] << " ";
-        }
+    #define N 8
+
+    void printBoard(int board[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++)
+            cout << board[i][j] << " ";
         cout << endl;
     }
-                            
-            </pre>
+    }
+
+    bool isValid(int board[N][N], int row, int col) {
+    for (int i = 0; i < col; i++)    //check whether there is queen in the left or not
+        if (board[row][i])
+            return false;
+    for (int i=row, j=col; i>=0 && j>=0; i--, j--)
+        if (board[i][j])       //check whether there is queen in the left upper diagonal or not
+            return false;
+    for (int i=row, j=col; j>=0 && i < N; i++, j--)
+        if (board[i][j])      //check whether there is queen in the left lower diagonal or not
+            return false;
+    return true;
+    }
+
+    bool solveNQueen(int board[N][N], int col) {
+    if (col >= N)           //when N queens are placed successfully
+        return true;
+    for (int i = 0; i < N; i++) {     //for each row, check placing of queen is possible or not
+        if (isValid(board, i, col) ) {
+            board[i][col] = 1;      //if validate, place the queen at place (i, col)
+            if ( solveNQueen(board, col + 1))    //Go for the other columns recursively
+                return true;
+                    
+            board[i][col] = 0;        //When no place is vacant remove that queen
+        }
+    }
+    return false;       //when no possible order is found
+    }
+
+    bool checkSolution() {
+    int board[N][N];
+    for(int i = 0; i< N; i++)
+        for(int j = 0; j< N; j++)
+            board[i][j] = 0;      //set all elements to 0
+                
+    if ( solveNQueen(board, 0) == false ) {     //starting from 0th column
+        cout << "Solution does not exist";
+        return false;
+    }
+    printBoard(board);
+    return true;
+    }
+
+    int main() {
+    checkSolution();
+    }
+                     
+     </pre>
         </div>
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of Insertion Sort is: O( n <sup>2</sup> )</p>
+        <p class="content">The Complexity of n queen  problem is: O( n! )</p>
         <br>
         <br>
+
     <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
        
     </div>
@@ -494,7 +553,7 @@ $numComments = $sqlNumComments->num_rows;
     </div>
     <div class="row">
         <div class="col-md-12">
-            <h2><b id="numComments"> <?php echo $numComments ?> Comments</b></h2>
+            <h2><b id="numComments"> <?php echo $TotalComments ?> Comments</b></h2>
             <div class="userComments">
 
             </div>
@@ -524,7 +583,7 @@ $numComments = $sqlNumComments->num_rows;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script type="text/javascript">
-    var isReply = false, commentID = 0, max = <?php echo $numComments ?>;
+    var isReply = false, commentID = 0, max = <?php echo $TotalComments ?>;
 
     $(document).ready(function () {
         $("#addComment, #addReply").on('click', function () {
@@ -537,7 +596,7 @@ $numComments = $sqlNumComments->num_rows;
 
             if (comment.length > 0) {
                 $.ajax({
-                    url: 'insertion.php', /* here*/
+                    url: 'nqueen.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -571,7 +630,7 @@ $numComments = $sqlNumComments->num_rows;
 
             if (name != "" && email != "" && password != "") {
                 $.ajax({
-                    url: 'insertion.php', /* here*/
+                    url: 'nqueen.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -598,7 +657,7 @@ $numComments = $sqlNumComments->num_rows;
 
             if (email != "" && password != "") {
                 $.ajax({
-                    url: 'insertion.php',  /* here*/
+                    url: 'nqueen.php',  /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -631,7 +690,7 @@ $numComments = $sqlNumComments->num_rows;
         }
 
         $.ajax({
-            url: 'insertion.php',  /* here*/
+            url: 'nqueen.php',  /* here*/
             method: 'POST',
             dataType: 'text',
             data: {

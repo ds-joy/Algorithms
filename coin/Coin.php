@@ -478,33 +478,33 @@ $TotalComments = $numComments+$numReplies;
     using namespace std;
         
     void min_coins(int coin_value[],int n,int amount)
-{
-  for( int i=0; i< n; i++ ) 
-    while(amount >= coin_value[i])
     {
-      //while loop is needed since one coin can be used multiple times
-      amount= amount - coin_value[i];
-      cout<< coin_value[i] <<" ";
+    for( int i=0; i< n; i++ ) 
+        while(amount >= coin_value[i])
+        {
+        //while loop is needed since one coin can be used multiple times
+        amount= amount - coin_value[i];
+        cout<< coin_value[i] <<" ";
+        }
+    cout<< endl;
     }
-  cout<< endl;
-}
 
-int main()
-{
-  int i,j,n,amount;
-  cout<<"Enter amount to be paid: ";
-  cin>>amount;
-  cout<<"Enter total kinds of currency: ";
-  cin>>n;
-  int coin_value[n]; //stores coins' values as per the user
-  cout<<"Enter all currency values: ";
-  for(i = 0;i< n; i++)//
-    cin>> coin_value[i];
-  sort(coin_value,coin_value+n,greater< int>()); /*using std::sort from C++ library, greater< int>() sorts the array in decreasing order*/
-  cout<<"The selected currecy values are: ";
-  min_coins(coin_value,n,amount);
-  return 0;
-}
+    int main()
+    {
+    int i,j,n,amount;
+    cout<<"Enter amount to be paid: ";
+    cin>>amount;
+    cout<<"Enter total kinds of currency: ";
+    cin>>n;
+    int coin_value[n]; //stores coins' values as per the user
+    cout<<"Enter all currency values: ";
+    for(i = 0;i< n; i++)//
+        cin>> coin_value[i];
+    sort(coin_value,coin_value+n,greater< int>()); /*using std::sort from C++ library, greater< int>() sorts the array in decreasing order*/
+    cout<<"The selected currecy values are: ";
+    min_coins(coin_value,n,amount);
+    return 0;
+    }
                      
      </pre>
         </div>

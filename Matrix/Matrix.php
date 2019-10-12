@@ -21,7 +21,7 @@ function createCommentRow($data) {
     $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                         AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                         WHERE replies.commentID = '".$data['id']."' 
-              /* here*/ AND replies.page_name = 'coin' 
+              /* here*/ AND replies.page_name = 'matrix' 
                         ORDER BY replies.id DESC LIMIT 1");
     while($dataR = $sql->fetch_assoc())
         $response .= createCommentRow($dataR);
@@ -41,7 +41,7 @@ if (isset($_POST['getAllComments'])) {
     $response = "";
     $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                          AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-               /* here*/ WHERE comments.page_name = 'coin'
+               /* here*/ WHERE comments.page_name = 'matrix'
                          ORDER BY comments.id DESC LIMIT $start, 20");
     while($data = $sql->fetch_assoc())
         $response .= createCommentRow($data);
@@ -57,28 +57,28 @@ if (isset($_POST['addComment'])) {
  //insert into reply
     if ($isReply != 'false') {
         $conn->query("INSERT INTO replies (comment, commentID, userID, createdOn, page_name) 
-            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'coin')"
+            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'matrix')"
                       );
 
         $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
-                /* here*/             WHERE replies.page_name = 'coin'
+                /* here*/             WHERE replies.page_name = 'matrix'
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
         if($loggedIn != true)
         {
             $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-         /* here*/              VALUES ('9','$comment',NOW(),'coin')");
+         /* here*/              VALUES ('9','$comment',NOW(),'matrix')");
         } else {
             $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-            /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'coin')");
+            /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'matrix')");
         }
         
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-            /* here*/                 WHERE comments.page_name = 'coin'
+            /* here*/                 WHERE comments.page_name = 'matrix'
                              ORDER BY comments.id DESC LIMIT 1");
     }
 
@@ -145,10 +145,10 @@ if (isset($_POST['logIn'])) {
 
 //showing the number of comments
 $sqlNumComments = $conn->query("SELECT id FROM comments
-                                WHERE comments.page_name = 'coin'"); /* here*/
+                                WHERE comments.page_name = 'matrix'"); /* here*/
 $numComments = $sqlNumComments->num_rows;
 $sqlNumReply = $conn->query("SELECT id FROM replies
-            /* here*/         WHERE replies.page_name = 'coin'");
+            /* here*/         WHERE replies.page_name = 'matrix'");
 $numReplies = $sqlNumReply->num_rows;
 $TotalComments = $numComments+$numReplies;
 ?>
@@ -222,7 +222,7 @@ $TotalComments = $numComments+$numReplies;
             margin-top: 10px;
         }
     </style>
-    <title>Coin Change Greedy</title>
+    <title>Strassen algorithm</title>
     
 </head>
 
@@ -330,7 +330,7 @@ $TotalComments = $numComments+$numReplies;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="Coin.php"> <i>Coin Change</i> </a>
+                        <a href="../coin/Coin.php"> <i>Coin Change</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../KnapsackBruteForce/KnapsackBrute.php"> <i>Knapsack Brute Force</i> </a>
@@ -351,7 +351,7 @@ $TotalComments = $numComments+$numReplies;
                         <a href="../Quick_sort/quickSort.php"> <i>Quick Sort</i> </a>
                     </li>
                     <li class="list-group-item"> 
-                        <a href="../Matrix/Matrix.php"> <i>Strassen's Algorithm</i> </a>
+                        <a href="Matrix.php"> <i>Strassen's Algorithm</i> </a>
                     </li>
                 </ol> <!--Di & Co-->
 
@@ -425,34 +425,34 @@ $TotalComments = $numComments+$numReplies;
         </div>
     </div>
     <!-- here -->
-    <h1 id="top">Coin Change Greedy Algorithm</h1>
+    <h1 id="top">Strassen Algorithm</h1>
             <p class="content">
-            A greedy algorithm is an algorithm that uses many iterations to compute the result. Such algorithms assume that this result will be obtained by selecting the best result at the current iteration. In other words: the global optimum is obtained by selecting the local optimum at the current time. 
+            In linear algebra, the Strassen algorithm, named after Volker Strassen, is an algorithm for matrix multiplication. It is faster than the standard matrix multiplication algorithm and is useful in practice for large matrices, but would be slower than the fastest known algorithms for extremely large matrices. 
                 
             </p>
             <p class="content">
-            In this problem, the goal is to find the minimum number of coins (with particular value) which add up to a given amount of money. Minimum coin change problem is often solved by either Dynamic Programming or Greedy algorithm . Here we have opted greedy algorithm to solve this problem.
+            Strassen's algorithm works for any ring, such as plus/multiply, but not all semirings, such as min-plus or boolean algebra, where the naive algorithm still works, and so called combinatorial matrix multiplication.
             </p>
 
             <p class="content">
-            Assuming there is an infinte supply of currency, an amount A has to be paid with minimum number of coins/notes, provided there are n kinds of coins with specific denomination/value from vi to vn Greedy algorithm is way where we make a choice which seems the best at that step. For more details, read the article on Greedy algorithm.So the greedy strategy is to visualize the best option i.e. heighest valued coin at each step for best results. Here we sort the coin's value in decreasing order and start with the heighest valued coin.
+            Volker Strassen first published this algorithm in 1969 and proved that the n3 general matrix multiplication algorithm wasn't optimal. The Strassen algorithm is only slightly better than that, but its publication resulted in much more research about matrix multiplication that led to faster approaches, such as the Coppersmith-Winograd algorithm.
             </p>
 
             
 
             <p class="content">
-                The quick sort function uses the partition algorithm to divide the array into two halves. This process continues untill all array elements are in place.
+                Using Strassen algorithm we can multiply two matrices using only seven multiplications.
             </p>
             
-            <!-- <h4 class="content"> Here is an animation explaining Quick Sort: </h4>
 
-            A gif explaining insertion sort 
+             
             <div class="anim_container">
-                <img src="../Pic/Quicksort-example.gif" alt="Insertion-sort01" class="img_anim">
-            </div> -->
+                <img src="../Pic/ins03.gif" alt="Insertion-sort01" class="img_anim">
+            </div>
+            <br>
 
             <!-- pseudocode -->
-            <h4 class="content"> Here is the pseudocode: </h4>
+            <!-- <h4 class="content"> Here is the pseudocode: </h4>
             <br>
             <div class="font-weight-bold">
             <pre>
@@ -467,7 +467,7 @@ $TotalComments = $numComments+$numReplies;
                     }
                 }
             </pre>
-            </div>
+            </div> -->
 
             <!-- Code -->
             <h4 class="content"> CODE:</h4>
@@ -477,41 +477,67 @@ $TotalComments = $numComments+$numReplies;
     #include &#60iostream>
     using namespace std;
         
-    void min_coins(int coin_value[],int n,int amount)
-{
-  for( int i=0; i< n; i++ ) 
-    while(amount >= coin_value[i])
+    int main()
     {
-      //while loop is needed since one coin can be used multiple times
-      amount= amount - coin_value[i];
-      cout<< coin_value[i] <<" ";
-    }
-  cout<< endl;
-}
+        int a[2][2],b[2][2],c[2][2],i,j;
+        int m1,m2,m3,m4,m5,m6,m7;
 
-int main()
-{
-  int i,j,n,amount;
-  cout<<"Enter amount to be paid: ";
-  cin>>amount;
-  cout<<"Enter total kinds of currency: ";
-  cin>>n;
-  int coin_value[n]; //stores coins' values as per the user
-  cout<<"Enter all currency values: ";
-  for(i = 0;i< n; i++)//
-    cin>> coin_value[i];
-  sort(coin_value,coin_value+n,greater< int>()); /*using std::sort from C++ library, greater< int>() sorts the array in decreasing order*/
-  cout<<"The selected currecy values are: ";
-  min_coins(coin_value,n,amount);
-  return 0;
-}
+        printf("Enter the 4 elements of first matrix: ");
+        for(i=0;i< 2;i++)
+            for(j=0;j< 2;j++)
+                scanf("%d",&a[i][j]);
+
+        printf("Enter the 4 elements of second matrix: ");
+        for(i=0;i< 2;i++)
+            for(j=0;j< 2;j++)
+                scanf("%d",&b[i][j]);
+
+        printf("\nThe first matrix is\n");
+        for(i=0;i< 2;i++)
+        {
+            printf("\n");
+            for(j=0;j< 2;j++)
+                printf("%d\t",a[i][j]);
+        }
+
+        printf("\nThe second matrix is\n");
+        for(i=0;i< 2;i++)
+        {
+            printf("\n");
+            for(j=0;j< 2;j++)
+                printf("%d\t",b[i][j]);
+        }
+
+        m1= (a[0][0] + a[1][1])*(b[0][0]+b[1][1]);
+        m2= (a[1][0]+a[1][1])*b[0][0];
+        m3= a[0][0]*(b[0][1]-b[1][1]);
+        m4= a[1][1]*(b[1][0]-b[0][0]);
+        m5= (a[0][0]+a[0][1])*b[1][1];
+        m6= (a[1][0]-a[0][0])*(b[0][0]+b[0][1]);
+        m7= (a[0][1]-a[1][1])*(b[1][0]+b[1][1]);
+
+        c[0][0]=m1+m4-m5+m7;
+        c[0][1]=m3+m5;
+        c[1][0]=m2+m4;
+        c[1][1]=m1-m2+m3+m6;
+
+        printf("\nAfter multiplication using \n");
+        for(i=0;i< 2;i++)
+        {
+            printf("\n");
+            for(j=0;j< 2;j++)
+                printf("%d\t",c[i][j]);
+        }
+
+        return 0;
+    }
                      
      </pre>
         </div>
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of coin change problem is: O( n )</p>
+        <p class="content">The Complexity of Strassen Algorithm is: O( n <sup>log7</sup> )</p>
         <br>
         <br>
 
@@ -569,7 +595,7 @@ int main()
 
             if (comment.length > 0) {
                 $.ajax({
-                    url: 'Coin.php', /* here*/
+                    url: 'Matrix.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -603,7 +629,7 @@ int main()
 
             if (name != "" && email != "" && password != "") {
                 $.ajax({
-                    url: 'Coin.php', /* here*/
+                    url: 'Matrix.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -630,7 +656,7 @@ int main()
 
             if (email != "" && password != "") {
                 $.ajax({
-                    url: 'Coin.php',  /* here*/
+                    url: 'Matrix.php',  /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -663,7 +689,7 @@ int main()
         }
 
         $.ajax({
-            url: 'Coin.php',  /* here*/
+            url: 'Matrix.php',  /* here*/
             method: 'POST',
             dataType: 'text',
             data: {
