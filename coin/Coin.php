@@ -21,7 +21,7 @@ function createCommentRow($data) {
     $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                         AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                         WHERE replies.commentID = '".$data['id']."' 
-              /* here*/ AND replies.page_name = 'quick' 
+              /* here*/ AND replies.page_name = 'coin' 
                         ORDER BY replies.id DESC LIMIT 1");
     while($dataR = $sql->fetch_assoc())
         $response .= createCommentRow($dataR);
@@ -41,7 +41,7 @@ if (isset($_POST['getAllComments'])) {
     $response = "";
     $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                          AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-               /* here*/ WHERE comments.page_name = 'quick'
+               /* here*/ WHERE comments.page_name = 'coin'
                          ORDER BY comments.id DESC LIMIT $start, 20");
     while($data = $sql->fetch_assoc())
         $response .= createCommentRow($data);
@@ -57,28 +57,28 @@ if (isset($_POST['addComment'])) {
  //insert into reply
     if ($isReply != 'false') {
         $conn->query("INSERT INTO replies (comment, commentID, userID, createdOn, page_name) 
-            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'quick')"
+            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'coin')"
                       );
 
         $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
-                /* here*/             WHERE replies.page_name = 'quick'
+                /* here*/             WHERE replies.page_name = 'coin'
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
         if($loggedIn != true)
         {
             $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-         /* here*/              VALUES ('9','$comment',NOW(),'quick')");
+         /* here*/              VALUES ('9','$comment',NOW(),'coin')");
         } else {
             $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-            /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'quick')");
+            /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'coin')");
         }
         
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-            /* here*/                 WHERE comments.page_name = 'quick'
+            /* here*/                 WHERE comments.page_name = 'coin'
                              ORDER BY comments.id DESC LIMIT 1");
     }
 
@@ -145,10 +145,10 @@ if (isset($_POST['logIn'])) {
 
 //showing the number of comments
 $sqlNumComments = $conn->query("SELECT id FROM comments
-                                WHERE comments.page_name = 'quick'"); /* here*/
+                                WHERE comments.page_name = 'coin'"); /* here*/
 $numComments = $sqlNumComments->num_rows;
 $sqlNumReply = $conn->query("SELECT id FROM replies
-            /* here*/         WHERE replies.page_name = 'quick'");
+            /* here*/         WHERE replies.page_name = 'coin'");
 $numReplies = $sqlNumReply->num_rows;
 $TotalComments = $numComments+$numReplies;
 ?>
@@ -222,7 +222,7 @@ $TotalComments = $numComments+$numReplies;
             margin-top: 10px;
         }
     </style>
-    <title>Quick Sort</title>
+    <title>Coin Change Greedy</title>
     
 </head>
 
@@ -330,7 +330,7 @@ $TotalComments = $numComments+$numReplies;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../coin/Coin.php"> <i>Coin Change</i> </a>
+                        <a href="Coin.php"> <i>Coin Change</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../KnapsackBruteForce/KnapsackBrute.php"> <i>Knapsack Brute Force</i> </a>
@@ -425,60 +425,47 @@ $TotalComments = $numComments+$numReplies;
         </div>
     </div>
     <!-- here -->
-    <h1 id="top">Quick Sort</h1>
+    <h1 id="top">Coin Change Greedy Algorithm</h1>
             <p class="content">
-                    The quicksort algorithm has a worst-case running time of O( n <sup>2</sup> ) on an input array
-                    of n numbers. Despite this slow worst-case running time, quicksort is often the best
-                    practical choice for sorting because it is remarkably efficient on the average: its
-                    expected running time is O(nlogn), and the constant factors hidden in the O(nlogn)
-                    notation are quite small. It also has the advantage of sorting in place, and it works well even in virtual-memory environments.
-            </p>
-
-            <p class="content">
-                The quick sort algorithm uses the divide and conqure method to sort the array. A Divide and Conquer algorithm has the major parts.
-                <ol class="content">
-                    <li>Divide</li>
-                    <li>Conqure</li>
-                    <li>Combine</li>
-                </ol>
-            </p>
-
-            <p class="content">
-                In the divide part the quick sort algorithm uses an approach of partitioning the array. The partition function takes one element and puts it its appropriate place and divides the array in two parts. One part is less than the inplaced array element and the other pard is greater.
+            A greedy algorithm is an algorithm that uses many iterations to compute the result. Such algorithms assume that this result will be obtained by selecting the best result at the current iteration. In other words: the global optimum is obtained by selecting the local optimum at the current time. 
                 
             </p>
+            <p class="content">
+            In this problem, the goal is to find the minimum number of coins (with particular value) which add up to a given amount of money. Minimum coin change problem is often solved by either Dynamic Programming or Greedy algorithm . Here we have opted greedy algorithm to solve this problem.
+            </p>
+
+            <p class="content">
+            Assuming there is an infinte supply of currency, an amount A has to be paid with minimum number of coins/notes, provided there are n kinds of coins with specific denomination/value from vi to vn Greedy algorithm is way where we make a choice which seems the best at that step. For more details, read the article on Greedy algorithm.So the greedy strategy is to visualize the best option i.e. heighest valued coin at each step for best results. Here we sort the coin's value in decreasing order and start with the heighest valued coin.
+            </p>
+
+            
 
             <p class="content">
                 The quick sort function uses the partition algorithm to divide the array into two halves. This process continues untill all array elements are in place.
             </p>
             
-            <h4 class="content"> Here is an animation explaining Quick Sort: </h4>
+            <!-- <h4 class="content"> Here is an animation explaining Quick Sort: </h4>
 
-            <!--A gif explaining insertion sort  -->
+            A gif explaining insertion sort 
             <div class="anim_container">
                 <img src="../Pic/Quicksort-example.gif" alt="Insertion-sort01" class="img_anim">
-            </div>
+            </div> -->
 
             <!-- pseudocode -->
             <h4 class="content"> Here is the pseudocode: </h4>
             <br>
             <div class="font-weight-bold">
             <pre>
-                quickSort(A, lo, hi) is
-                if lo < hi then
-                p := partition(A, lo, hi)
-                quicksort(A, lo, p - 1)
-                quicksort(A, p + 1, hi)
-
-                partition(A, lo, hi) is
-                pivot := A[hi]
-                i := lo
-                for j := lo to hi do
-                    if A[j] < pivot then
-                        swap A[i] with A[j]
-                        i := i + 1
-                swap A[i] with A[hi]
-                return i
+                min_coins(coin_value[],n,amount)
+                {
+                for( i= 1 to n )
+                    while amount > = to coins[i]
+                    {
+                    //while loop is needed since one coin can be used multiple times
+                    amount = amount - coin_value[i]
+                    print coin_value[i]
+                    }
+                }
             </pre>
             </div>
 
@@ -490,69 +477,41 @@ $TotalComments = $numComments+$numReplies;
     #include &#60iostream>
     using namespace std;
         
-    int data_array[100000];
-    int temporary;
-
-    //here we are using a global array so we
-    //don't have to pass it as an argument
-
-    int partition(int start, int stop);
-    void quickSort(int start, int stop);
-
-    int main() {
-        int array_size;
-        cout << "Enter array size : ";
-        cin >> array_size;
-
-        cout << endl << "Data Array : ";
-        for(int i = 0 ; i < array_size; i++) {
-            data_array[i]=rand()%100;
-            cout << data_array[i] << ends;
-        }
-        cout << endl;
-
-        quickSort(0, array_size-1);
-
-        cout << endl << "Sorted_array : ";
-        for(int i=0 ;i < array_size;i++)
-            cout << data_array[i] << ends;
-        cout << endl;
-
-        return 0;
+    void min_coins(int coin_value[],int n,int amount)
+{
+  for( int i=0; i< n; i++ ) 
+    while(amount >= coin_value[i])
+    {
+      //while loop is needed since one coin can be used multiple times
+      amount= amount - coin_value[i];
+      cout<< coin_value[i] <<" ";
     }
+  cout<< endl;
+}
 
-    int partition(int start, int stop) {
-        int pivot = data_array[start];
-        int i = stop+1;
-        for(int j=stop;j>start;j--) {
-            if(pivot < data_array[j]) {
-                i--;
-                temporary = data_array[i];
-                data_array[i]=data_array[j];
-                data_array[j]=temporary;
-            }
-        }
-        i--;
-        temporary = data_array[i];
-        data_array[i]=data_array[start];
-        data_array[start]=temporary;
-        return i;
-    }
-
-    void quickSort(int start, int stop) {
-        if(start < stop) {
-            int position = partition(start, stop);
-            quickSort(start, position-1);
-            quickSort(position+1, stop);
-        }
-    }
+int main()
+{
+  int i,j,n,amount;
+  cout<<"Enter amount to be paid: ";
+  cin>>amount;
+  cout<<"Enter total kinds of currency: ";
+  cin>>n;
+  int coin_value[n]; //stores coins' values as per the user
+  cout<<"Enter all currency values: ";
+  for(i = 0;i< n; i++)//
+    cin>> coin_value[i];
+  sort(coin_value,coin_value+n,greater< int>()); /*using std::sort from C++ library, greater< int>() sorts the array in decreasing order*/
+  cout<<"The selected currecy values are: ";
+  min_coins(coin_value,n,amount);
+  return 0;
+}
                      
      </pre>
         </div>
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of Quick Sort is: O( nlogn )</p>
+        <p class="content">The Complexity of coin change problem is: O( n )</p>
         <br>
         <br>
 
@@ -610,7 +569,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (comment.length > 0) {
                 $.ajax({
-                    url: 'quickSort.php', /* here*/
+                    url: 'Coin.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -644,7 +603,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (name != "" && email != "" && password != "") {
                 $.ajax({
-                    url: 'quickSort.php', /* here*/
+                    url: 'Coin.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -671,7 +630,7 @@ $TotalComments = $numComments+$numReplies;
 
             if (email != "" && password != "") {
                 $.ajax({
-                    url: 'quickSort.php',  /* here*/
+                    url: 'Coin.php',  /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -704,7 +663,7 @@ $TotalComments = $numComments+$numReplies;
         }
 
         $.ajax({
-            url: 'quickSort.php',  /* here*/
+            url: 'Coin.php',  /* here*/
             method: 'POST',
             dataType: 'text',
             data: {

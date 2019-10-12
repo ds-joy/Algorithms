@@ -16,13 +16,12 @@ function createCommentRow($data) {
             <div class="comment">
                 <div class="user">'.$data['name'].' <span class="time">'.$data['createdOn'].'</span></div>
                 <div class="userComment">'.$data['comment'].'</div>
-                <div class="reply"><a href="javascript:void(0)" data-commentID="'.$data['id'].'" onclick="reply(this)">REPLY</a></div>
                 <div class="replies">';
 //show replies
     $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                         AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
                         WHERE replies.commentID = '".$data['id']."' 
-              /* here*/ AND replies.page_name = 'bubble' 
+              /* here*/ AND replies.page_name = 'coin' 
                         ORDER BY replies.id DESC LIMIT 1");
     while($dataR = $sql->fetch_assoc())
         $response .= createCommentRow($dataR);
@@ -42,7 +41,7 @@ if (isset($_POST['getAllComments'])) {
     $response = "";
     $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                          AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-               /* here*/ WHERE comments.page_name = 'bubble'
+               /* here*/ WHERE comments.page_name = 'coin'
                          ORDER BY comments.id DESC LIMIT $start, 20");
     while($data = $sql->fetch_assoc())
         $response .= createCommentRow($data);
@@ -58,21 +57,28 @@ if (isset($_POST['addComment'])) {
  //insert into reply
     if ($isReply != 'false') {
         $conn->query("INSERT INTO replies (comment, commentID, userID, createdOn, page_name) 
-                      VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'insertion')"
+            /* here*/           VALUES ('$comment', '$commentID', '".$_SESSION['userID']."', NOW(), 'coin')"
                       );
 
         $sql = $conn->query("SELECT replies.id, name, comment, DATE_FORMAT(replies.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM replies INNER JOIN users ON replies.userID = users.id 
-                /* here*/             WHERE replies.page_name = 'bubble'
+                /* here*/             WHERE replies.page_name = 'coin'
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
-        $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-                      VALUES ('".$_SESSION['userID']."','$comment',NOW(),'insertion')");
+        if($loggedIn != true)
+        {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+         /* here*/              VALUES ('9','$comment',NOW(),'coin')");
+        } else {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+            /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'coin')");
+        }
+        
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
-            /* here*/                 WHERE comments.page_name = 'bubble'
+            /* here*/                 WHERE comments.page_name = 'coin'
                              ORDER BY comments.id DESC LIMIT 1");
     }
 
@@ -139,8 +145,12 @@ if (isset($_POST['logIn'])) {
 
 //showing the number of comments
 $sqlNumComments = $conn->query("SELECT id FROM comments
-                                WHERE comments.page_name = 'bubble'"); /* here*/
+                                WHERE comments.page_name = 'coin'"); /* here*/
 $numComments = $sqlNumComments->num_rows;
+$sqlNumReply = $conn->query("SELECT id FROM replies
+            /* here*/         WHERE replies.page_name = 'coin'");
+$numReplies = $sqlNumReply->num_rows;
+$TotalComments = $numComments+$numReplies;
 ?>
 
 
@@ -170,6 +180,20 @@ $numComments = $sqlNumComments->num_rows;
     <style type="text/css">
         .comment {
             margin-bottom: 20px;
+            min-height: 30px;
+            border-radius: 3px;
+            font-family: Arial;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #797979;
+            position: relative;
+            max-width: 300px;
+            height: auto;
+            margin: 20px 10px;
+            padding: 5px;
+            background-color: #DADADA;
+            border-radius: 3px;
+            border: 5px solid #ccc;
         }
 
         .user {
@@ -198,7 +222,7 @@ $numComments = $sqlNumComments->num_rows;
             margin-top: 10px;
         }
     </style>
-    <title>Insertion Sort</title>
+    <title>Coin Change Greedy</title>
     
 </head>
 
@@ -251,7 +275,7 @@ $numComments = $sqlNumComments->num_rows;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../Bubble/ubble.php"> <i>Bubble Sort</i> </a>
+                        <a href="../Bubble/bubble.php"> <i>Bubble Sort</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../selection/selection.php"> <i>Selection Sort</i> </a>
@@ -263,7 +287,7 @@ $numComments = $sqlNumComments->num_rows;
                         <a href="../Merge_sort/mergeSort.php"> <i>Merge Sort</i> </a>
                     </li>
                     <li class="list-group-item"> 
-                        <a href="../Quick_sort/quickSort.php"> <i>Quick Sort</i> </a>
+                        <a href="quickSort.php"> <i>Quick Sort</i> </a>
                     </li>
                 </ol><!-- sorting -->
 
@@ -273,10 +297,10 @@ $numComments = $sqlNumComments->num_rows;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../search/linear.php"> <i>Linear Search</i> </a>
+                        <a href="../linear/linear.php"> <i>Linear Search</i> </a>
                     </li>
                     <li class="list-group-item"> 
-                        <a href="../search/binary.php"> <i> Binary Search </i> </a>
+                        <a href="../binary/binary.php"> <i> Binary Search </i> </a>
                     </li>
                 </ol>
 
@@ -306,7 +330,7 @@ $numComments = $sqlNumComments->num_rows;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../Greedy/Coin.php"> <i>Coin Change</i> </a>
+                        <a href="Coin.php"> <i>Coin Change</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../KnapsackBruteForce/KnapsackBrute.php"> <i>Knapsack Brute Force</i> </a>
@@ -400,37 +424,48 @@ $numComments = $sqlNumComments->num_rows;
             ?>
         </div>
     </div>
-    <h1 id="top">Insertion Sort</h1>
+    <!-- here -->
+    <h1 id="top">Coin Change Greedy Algorithm</h1>
             <p class="content">
-                This is an in-place comparison-based sorting algorithm. Here, a sub-list is maintained which is always sorted. For example, the lower part of an array is maintained to be sorted. An element which is to be 'insert'ed in this sorted sub-list, has to find its appropriate place and then it has to be inserted there. Hence the name, <b>insertion sort.</b> 
+            A greedy algorithm is an algorithm that uses many iterations to compute the result. Such algorithms assume that this result will be obtained by selecting the best result at the current iteration. In other words: the global optimum is obtained by selecting the local optimum at the current time. 
+                
+            </p>
+            <p class="content">
+            In this problem, the goal is to find the minimum number of coins (with particular value) which add up to a given amount of money. Minimum coin change problem is often solved by either Dynamic Programming or Greedy algorithm . Here we have opted greedy algorithm to solve this problem.
             </p>
 
             <p class="content">
-                Insertion sort iterates, consuming one input element each repetition, and growing a sorted output list. At each iteration, insertion sort removes one element from the input data, finds the location it belongs within the sorted list, and inserts it there. It repeats until no input elements remain.
-                Sorting is typically done in-place, by iterating up the array, growing the sorted list behind it. At each array-position, it checks the value there against the largest value in the sorted list (which happens to be next to it, in the previous array-position checked). If larger, it leaves the element in place and moves to the next. If smaller, it finds the correct position within the sorted list, shifts all the larger values up to make a space, and inserts into that correct position.
+            Assuming there is an infinte supply of currency, an amount A has to be paid with minimum number of coins/notes, provided there are n kinds of coins with specific denomination/value from vi to vn Greedy algorithm is way where we make a choice which seems the best at that step. For more details, read the article on Greedy algorithm.So the greedy strategy is to visualize the best option i.e. heighest valued coin at each step for best results. Here we sort the coin's value in decreasing order and start with the heighest valued coin.
+            </p>
+
+            
+
+            <p class="content">
+                The quick sort function uses the partition algorithm to divide the array into two halves. This process continues untill all array elements are in place.
             </p>
             
-            <h4 class="content"> Here is an animation explaining Insertion Sort: </h4>
+            <!-- <h4 class="content"> Here is an animation explaining Quick Sort: </h4>
 
-            <!--A gif explaining insertion sort  -->
+            A gif explaining insertion sort 
             <div class="anim_container">
-                <img src="../Pic/Insertion-sort01.gif" alt="Insertion-sort01" class="img_anim">
-            </div>
+                <img src="../Pic/Quicksort-example.gif" alt="Insertion-sort01" class="img_anim">
+            </div> -->
 
             <!-- pseudocode -->
             <h4 class="content"> Here is the pseudocode: </h4>
             <br>
             <div class="font-weight-bold">
             <pre>
-                    INSERTION-SORT (A)
-                     for j = 2 to A:length
-                     key = A[j]
-                     // Insert A[j] into the sorted sequence A[1 .. j-1].
-                     i = j - 1
-                     while i > 0 and A[i] > key
-                     A[i+1] = A[j]
-                     i = i - 1
-                     A[i+1] = key
+                min_coins(coin_value[],n,amount)
+                {
+                for( i= 1 to n )
+                    while amount > = to coins[i]
+                    {
+                    //while loop is needed since one coin can be used multiple times
+                    amount = amount - coin_value[i]
+                    print coin_value[i]
+                    }
+                }
             </pre>
             </div>
 
@@ -442,47 +477,44 @@ $numComments = $sqlNumComments->num_rows;
     #include &#60iostream>
     using namespace std;
         
-    int main() {
-        int data[] = {9, 5, 1, 4, 3};
-        int size = sizeof(data) / sizeof(data[0]);
-        
-        //This function sorts the array 
-        //using insertion sort algorithm
-        insertionSort(data, size);
-        
-        cout << "Sorted array in ascending order:\n";
-        
-        //This function Prints array
-        printArray(data, size);
+    void min_coins(int coin_value[],int n,int amount)
+{
+  for( int i=0; i< n; i++ ) 
+    while(amount >= coin_value[i])
+    {
+      //while loop is needed since one coin can be used multiple times
+      amount= amount - coin_value[i];
+      cout<< coin_value[i] <<" ";
     }
-    
-    void insertionSort(int array[], int size) {
-        for (int step = 1; step < size; step++) {
-        int key = array[step];
-        int j = step - 1;
-        while (key < array[j] && j >= 0) {
-            // For descending order, change key < array[j] to key>array[j].
-            array[j + 1] = array[j];
-            --j;
-            }
-        array[j + 1] = key;
-        }
-    }
-    void printArray(int array[], int size) {
-        for (int i = 0; i < size; i++) {
-        cout << array[i] << " ";
-        }
-        cout << endl;
-    }
-                            
-            </pre>
+  cout<< endl;
+}
+
+int main()
+{
+  int i,j,n,amount;
+  cout<<"Enter amount to be paid: ";
+  cin>>amount;
+  cout<<"Enter total kinds of currency: ";
+  cin>>n;
+  int coin_value[n]; //stores coins' values as per the user
+  cout<<"Enter all currency values: ";
+  for(i = 0;i< n; i++)//
+    cin>> coin_value[i];
+  sort(coin_value,coin_value+n,greater< int>()); /*using std::sort from C++ library, greater< int>() sorts the array in decreasing order*/
+  cout<<"The selected currecy values are: ";
+  min_coins(coin_value,n,amount);
+  return 0;
+}
+                     
+     </pre>
         </div>
 
         <!-- Complexity -->
         <h4 class="content">Complexity:</h4>
-        <p class="content">The Complexity of Insertion Sort is: O( n <sup>2</sup> )</p>
+        <p class="content">The Complexity of coin change problem is: O( n )</p>
         <br>
         <br>
+
     <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
        
     </div>
@@ -494,7 +526,7 @@ $numComments = $sqlNumComments->num_rows;
     </div>
     <div class="row">
         <div class="col-md-12">
-            <h2><b id="numComments"> <?php echo $numComments ?> Comments</b></h2>
+            <h2><b id="numComments"> <?php echo $TotalComments ?> Comments</b></h2>
             <div class="userComments">
 
             </div>
@@ -524,7 +556,7 @@ $numComments = $sqlNumComments->num_rows;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script type="text/javascript">
-    var isReply = false, commentID = 0, max = <?php echo $numComments ?>;
+    var isReply = false, commentID = 0, max = <?php echo $TotalComments ?>;
 
     $(document).ready(function () {
         $("#addComment, #addReply").on('click', function () {
@@ -537,7 +569,7 @@ $numComments = $sqlNumComments->num_rows;
 
             if (comment.length > 0) {
                 $.ajax({
-                    url: 'insertion.php', /* here*/
+                    url: 'Coin.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -571,7 +603,7 @@ $numComments = $sqlNumComments->num_rows;
 
             if (name != "" && email != "" && password != "") {
                 $.ajax({
-                    url: 'insertion.php', /* here*/
+                    url: 'Coin.php', /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -598,7 +630,7 @@ $numComments = $sqlNumComments->num_rows;
 
             if (email != "" && password != "") {
                 $.ajax({
-                    url: 'insertion.php',  /* here*/
+                    url: 'Coin.php',  /* here*/
                     method: 'POST',
                     dataType: 'text',
                     data: {
@@ -631,7 +663,7 @@ $numComments = $sqlNumComments->num_rows;
         }
 
         $.ajax({
-            url: 'insertion.php',  /* here*/
+            url: 'Coin.php',  /* here*/
             method: 'POST',
             dataType: 'text',
             data: {
