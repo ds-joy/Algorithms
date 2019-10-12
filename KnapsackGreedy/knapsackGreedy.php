@@ -66,8 +66,14 @@ if (isset($_POST['addComment'])) {
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
-        $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-         /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'knapgreedy')");
+        if($loggedIn != true)
+        {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+         /* here*/              VALUES ('9','$comment',NOW(),'knapgreedy')");
+        } else {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+            /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'knapgreedy')");
+        }
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 

@@ -66,8 +66,15 @@ if (isset($_POST['addComment'])) {
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
-        $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-         /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'bubble')");
+        if($loggedIn != true)
+        {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+         /* here*/              VALUES ('9','$comment',NOW(),'bubble')");
+        } else {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+            /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'bubble')");
+        }
+        
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
@@ -268,7 +275,7 @@ $TotalComments = $numComments+$numReplies;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../Bubble/ubble.php"> <i>Bubble Sort</i> </a>
+                        <a href="../Bubble/bubble.php"> <i>Bubble Sort</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../selection/selection.php"> <i>Selection Sort</i> </a>
@@ -290,10 +297,10 @@ $TotalComments = $numComments+$numReplies;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../search/linear.php"> <i>Linear Search</i> </a>
+                        <a href="../linear/linear.php"> <i>Linear Search</i> </a>
                     </li>
                     <li class="list-group-item"> 
-                        <a href="../search/binary.php"> <i> Binary Search </i> </a>
+                        <a href="../binary/binary.php"> <i> Binary Search </i> </a>
                     </li>
                 </ol>
 
@@ -323,7 +330,7 @@ $TotalComments = $numComments+$numReplies;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../Greedy/Coin.php"> <i>Coin Change</i> </a>
+                        <a href="../coin/Coin.php"> <i>Coin Change</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../KnapsackBruteForce/KnapsackBrute.php"> <i>Knapsack Brute Force</i> </a>

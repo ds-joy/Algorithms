@@ -11,6 +11,7 @@ $conn = new mysqli('localhost', 'root', '', 'Algorithms');
 
 function createCommentRow($data) {
     global $conn;
+    
 
     $response = '
             <div class="comment">
@@ -51,6 +52,8 @@ if (isset($_POST['getAllComments'])) {
 
 //add comment or reply
 if (isset($_POST['addComment'])) {
+
+    
     $comment = $conn->real_escape_string($_POST['comment']);
     $isReply = $conn->real_escape_string($_POST['isReply']);
     $commentID = $conn->real_escape_string($_POST['commentID']);
@@ -66,8 +69,15 @@ if (isset($_POST['addComment'])) {
                              ORDER BY replies.id DESC LIMIT 1");
     } else {
         //insert into comments
-        $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
-         /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'merge')");
+        if($loggedIn != true)
+        {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+         /* here*/              VALUES ('9','$comment',NOW(),'merge')");
+        } else {
+            $conn->query("INSERT INTO comments (userID, comment, createdOn, page_name) 
+            /* here*/              VALUES ('".$_SESSION['userID']."','$comment',NOW(),'merge')");
+        }
+        
 
         $sql = $conn->query("SELECT comments.id, name, comment, DATE_FORMAT(comments.createdOn, '%Y-%m-%d') 
                              AS createdOn FROM comments INNER JOIN users ON comments.userID = users.id 
@@ -215,7 +225,7 @@ $TotalComments = $numComments+$numReplies;
             margin-top: 10px;
         }
     </style>
-    <title>Bubble Sort</title>
+    <title>Merge Sort</title>
     
 </head>
 
@@ -268,7 +278,7 @@ $TotalComments = $numComments+$numReplies;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../Bubble/ubble.php"> <i>Bubble Sort</i> </a>
+                        <a href="../Bubble/bubble.php"> <i>Bubble Sort</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../selection/selection.php"> <i>Selection Sort</i> </a>
