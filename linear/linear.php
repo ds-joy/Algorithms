@@ -95,6 +95,10 @@ if (isset($_POST['register'])) {
         $sql = $conn->query("SELECT id FROM users WHERE email='$email'");
         if ($sql->num_rows > 0)
             exit('failedUserExists');
+        $sql = $conn->query("SELECT id FROM users WHERE name='$name'");
+
+            if ($sql->num_rows > 0)
+                exit('failedUserNameExists');
         else {
             //add new user
             $ePassword = password_hash($password, PASSWORD_BCRYPT);
@@ -297,7 +301,7 @@ $TotalComments = $numComments+$numReplies;
                 </li>
                 <ol>
                     <li class="list-group-item"> 
-                        <a href="../linear/linear.php"> <i>Linear Search</i> </a>
+                        <a href="linear.php"> <i>Linear Search</i> </a>
                     </li>
                     <li class="list-group-item"> 
                         <a href="../binary/binary.php"> <i> Binary Search </i> </a>
@@ -604,6 +608,8 @@ $TotalComments = $numComments+$numReplies;
                             alert('Please insert valid email address!');
                         else if (response === 'failedUserExists')
                             alert('User with this email already exists!');
+                        else if (response === 'failedUserNameExists')
+                            alert('User with this username already exists!');
                         else
                             window.location = window.location;
                     }

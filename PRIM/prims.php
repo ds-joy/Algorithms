@@ -95,6 +95,10 @@ if (isset($_POST['register'])) {
         $sql = $conn->query("SELECT id FROM users WHERE email='$email'");
         if ($sql->num_rows > 0)
             exit('failedUserExists');
+        $sql = $conn->query("SELECT id FROM users WHERE name='$name'");
+
+        if ($sql->num_rows > 0)
+                exit('failedUserNameExists');
         else {
             //add new user
             $ePassword = password_hash($password, PASSWORD_BCRYPT);
@@ -494,7 +498,7 @@ $TotalComments = $numComments+$numReplies;
         cin>>vertices>>edges;
         dataElement temp;
     
-        for(int i=0; i<edges; i++)
+        for(int i=0; i< edges; i++)
         {
             cin >> n1 >> n2 >> w;
             temp.node = n2; temp.weight = w;
@@ -656,6 +660,8 @@ $TotalComments = $numComments+$numReplies;
                             alert('Please insert valid email address!');
                         else if (response === 'failedUserExists')
                             alert('User with this email already exists!');
+                        else if (response === 'failedUserNameExists')
+                            alert('User with this username already exists!');
                         else
                             window.location = window.location;
                     }
